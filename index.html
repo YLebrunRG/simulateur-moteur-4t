@@ -1,0 +1,2308 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Animation cycle moteur quatre temps — Beau de Rochas</title>
+<style>
+:root{color-scheme:light;--ink:#253443;--muted:#627383;--line:#d7e0e4;--blue:#1677a6;--amber:#c47b28;--red:#c44b46;--paper:#fcfcfa;--bg:#f0f3f3}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+.shell{max-width:none;width:100%;margin:12px auto;padding:0 12px 20px}.heading{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline;margin-bottom:14px}h1{font-size:22px;line-height:1.18;margin:0;letter-spacing:-.4px} .sub{color:var(--muted);font-size:13px;margin-top:5px}
+.panel{background:white;border:1px solid #d8e0e4;border-radius:14px;box-shadow:0 4px 18px #2031420a;overflow:hidden}
+.controls{display:flex;flex-wrap:wrap;gap:16px 24px;padding:15px 18px;border-bottom:1px solid var(--line);align-items:end}.group{display:flex;flex-direction:column;gap:6px}.group label{font-size:12px;font-weight:700;color:#6a7986;text-transform:uppercase;letter-spacing:.7px}.choices{display:flex;gap:5px;flex-wrap:wrap}.choices button,.play{border:1px solid #c6d0d7;background:#fff;color:var(--ink);padding:9px 12px;border-radius:8px;white-space:nowrap;font:600 13px system-ui;cursor:pointer}.choices button[aria-pressed="true"]{color:#fff;background:#234b63;border-color:#234b63}.choices button:hover,.play:hover{border-color:#234b63}.play{background:#156b70;color:white;border-color:#156b70;min-width:105px}.spacer{flex:1 1 0}.speedbox{min-width:138px}.speedbox input{width:142px;accent-color:#16777b}.readouts{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));border-bottom:1px solid var(--line);background:#f9fbfb}.readout{padding:9px 16px;border-right:1px solid var(--line)}.readout:last-child{border:none}.readout .hint{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#617383;font-weight:700}.readout .number{font-variant-numeric:tabular-nums;font-weight:750;font-size:22px;line-height:1.3}.readout .number small{font-size:12px;font-weight:500;color:var(--muted)}
+.illustration{overflow-x:auto;overflow-y:hidden;padding:8px 12px 0;background:#fff}svg{display:block;width:100%;height:auto;max-height:none;margin:auto}@media(min-width:900px){#scene{min-width:var(--scene-min-width,1160px)}}.bottom{padding:12px 18px 15px;border-top:1px solid var(--line);display:grid;gap:10px}.slidearea{display:flex;gap:15px;align-items:center}.slidearea input{flex:1;accent-color:#be4945;cursor:pointer}.angleTag{min-width:75px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}.legend{display:flex;flex-wrap:wrap;gap:14px 22px;font-size:12px;color:#556474}.stroke{display:inline-block;vertical-align:middle;width:23px;margin-right:6px;border-top:3px solid #3a5462}.stroke.dash{border-top-style:dashed;border-color:#7b91a2}.stroke.red{border-color:#c44b46}.stroke.blue{border-color:#1677a6}.stroke.amber{border-color:#c47b28}.footnote{font-size:12px;color:#75818b;margin:8px 4px}
+@media(max-width:700px){.shell{margin:8px auto;padding:0 7px}.controls{padding:10px;gap:12px}.readouts{grid-template-columns:1fr 1fr}.readout:nth-child(2){border-right:none}.readout:nth-child(-n+2){border-bottom:1px solid var(--line)}.readout .number{font-size:18px}.readout{padding:8px 12px}.choices button,.play{font-size:12px;padding:7px 8px} .illustration{padding:0;overflow-x:auto} svg{min-width:680px}.bottom{padding:10px}h1{font-size:19px}}
+.anglebar{padding:10px 18px 12px;border-top:1px solid var(--line);background:#fff}.greenHint{font-size:12px;color:#647786;margin-top:7px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}.greenHint button{margin-left:auto;background:white;color:#3b5869;border:1px solid #c9d5dc;border-radius:6px;padding:5px 10px;cursor:pointer;font:600 12px system-ui}#greenHandles .green-knob{cursor:grab;touch-action:none;user-select:none}#pvTimingMarks,#plotAnnotations,#realDot,#idealDot,#volumeGuide,#pressureLine,#extremeLabels,#atmosLabel{pointer-events:none}#greenHandles .green-knob:active{cursor:grabbing}#greenHandles .green-knob:focus-visible{outline:none}.parameters{background:#f8fafb;border-top:1px solid var(--line);padding:14px 18px}.paramHead{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}.paramHead strong{font-size:16px}.paramHead span{font-size:12px;color:#647887;flex:1}.paramHead button{cursor:pointer;border:1px solid #c9d5dc;background:white;padding:7px 10px;border-radius:7px}.paramGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px}.paramGrid label{font-size:12px;font-weight:650;color:#435868;display:flex;flex-direction:column;gap:3px}.paramGrid input{max-width:100%;width:100%;padding:7px 9px;border-radius:7px;border:1px solid #bbccd5;background:white;font:600 14px system-ui;color:#203a4d}.calcs{overflow-x:auto;margin-top:11px}.calcs table{border-collapse:collapse;width:100%;font-size:12px;text-align:left}.calcs th,.calcs td{padding:6px 9px;border-bottom:1px solid #dce5e9}.calcs th{background:#eaf0f3;color:#345063}.calcs td:nth-child(2){font-weight:750;font-variant-numeric:tabular-nums}.modelNote{font-size:11px;color:#667b89;margin-top:8px}#parameterWarning{font-size:12px;color:#a34627;margin-top:7px;line-height:1.4}
+.paramSectionTitle{display:flex;align-items:baseline;gap:10px;margin:16px 0 8px;padding:7px 10px;background:#eaf0f4;border-left:3px solid #6c8798;border-radius:3px;font-size:13px;font-weight:750;color:#344c5b}
+.paramSectionTitle small{font-size:11px;font-weight:450;color:#627989}
+ .paramGrid input:focus{outline:2px solid #6da5c4;outline-offset:1px}
+.paramGrid input[readonly]{background:#ecf2f4;color:#3a5969;cursor:default}
+.paramGrid .rfa-reset{font:600 11px system-ui;cursor:pointer;border:1px solid #a9becb;background:#fff;border-radius:6px;color:#335d71;padding:5px 8px;text-align:left}
+.paramGrid .rfa-reset:hover{background:#ebf2f7}
+.calcs .emphasis{background:#eaf4f7}
+
+.enginePresets{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 12px;margin:8px 0 12px;background:#eef3f6;border:1px solid #d8e3e9;border-radius:9px}
+.enginePresets .presetTitle{font-size:12px;font-weight:750;color:#344b5a;margin-right:3px}
+.enginePresets button{background:white;border:1px solid #bacbd7;color:#314a5c;padding:8px 13px;border-radius:7px;cursor:pointer;font:700 12px system-ui}
+.enginePresets button[aria-pressed="true"]{color:white;background:#234b63;border-color:#234b63}
+.enginePresets button:disabled{cursor:not-allowed;opacity:.42}
+.enginePresets small{font-size:10px;font-weight:450;display:block;opacity:.85}
+.constraintHint{font-size:12px;color:#536f7d;padding:8px 10px 2px}
+.constraintHint strong{color:#305a6b}
+
+#presetInfo{min-height:14px;margin:-2px 0 4px;font-size:11px;color:#577182}
+#realModelInfo{padding:8px 10px;margin-top:9px;background:#f0f6f9;border-radius:6px;color:#415b6c;font-size:12px}
+@media(max-width:720px){.paramGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.energyReadouts{display:flex;flex-wrap:wrap;column-gap:18px;row-gap:6px;padding:9px 2px 7px;border-top:1px solid #dce5e9;border-bottom:1px solid #dce5e9;margin-top:10px;color:#405969;font-size:12px}
+.energyReadouts b{color:#233f51;font-variant-numeric:tabular-nums}
+.energyDisclaimer{color:#6b7d88;font-size:11px;line-height:1.5;margin-top:5px}
+/* Interactions directes : piston et repères angulaires de l'épure. */
+/* La bielle est dessinée devant le piston, mais ne doit pas empêcher sa saisie. */
+#connectingRodOuter,#connectingRodInner,#crankArm,#crankPin,#crankCenter,#crankCenterDot {pointer-events:none}
+#piston {cursor:ew-resize;touch-action:none;user-select:none}
+#piston:active {cursor:grabbing}
+#crankPinDragHit {cursor:grab;touch-action:none;user-select:none}
+#crankPinDragHit:active {cursor:grabbing}
+#timingMarks [data-timing-key] {cursor:grab;touch-action:none;user-select:none}
+#timingMarks [data-timing-key]:active {cursor:grabbing}
+#timingMarks [data-timing-key]:focus-visible .timing-focus {stroke:#16435b;stroke-width:2.2}
+/* Le focus clavier entoure uniquement la pastille, pas toute la frise angulaire. */
+#idealAngleSlider:focus{outline:none}
+#idealAngleSlider:focus-visible #idealAngleThumb{stroke:#172f40;stroke-width:3.3}
+/* Réglages d'affichage : ne modifient ni la géométrie horizontale, ni les valeurs calculées. */
+.figure-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:7px 16px;background:#f7fafb;border-bottom:1px solid #e2e9ec}
+.figure-toolbar-title{font-size:12px;font-weight:700;color:#526879;white-space:nowrap}
+.figure-toolbar .choices button,.figure-toolbar .graph-focus-button{padding:5px 10px;font:600 11px system-ui;border:1px solid #bfcfd8;background:#fff;border-radius:6px;color:#425a69;cursor:pointer}
+.figure-toolbar .choices button[aria-pressed="true"]{background:#234b63;color:#fff;border-color:#234b63}
+.figure-toolbar .graph-focus-button{margin-left:auto}
+body.graph-view{margin:0;background:#fff;overflow:hidden}
+body.graph-view .shell{max-width:none;margin:0;padding:0}
+body.graph-view .heading,body.graph-view .controls,body.graph-view .readouts,body.graph-view .parameters,body.graph-view .bottom,body.graph-view .footnote{display:none}
+body.graph-view .panel{border:0;box-shadow:none;border-radius:0;overflow:visible}
+body.graph-view .figure-toolbar{min-height:43px;justify-content:center;padding:5px 10px}
+body.graph-view .illustration{height:calc(100dvh - 44px);padding:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+body.graph-view #scene{width:auto!important;max-width:100%!important;min-width:0!important;height:100%!important;max-height:100%!important;margin:auto}
+@media(max-width:720px){.figure-toolbar{gap:6px;padding:6px}.figure-toolbar .graph-focus-button{margin-left:0}}
+
+/* Présentation compacte : uniquement les commandes retenues par l'enseignant. */
+.readouts{display:none!important}
+.controls .control-label{font:700 11px/1.2 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.35px;color:#536e7e;white-space:nowrap;margin-left:4px}
+.controls .play{margin-left:0!important;margin-right:6px}
+@media(max-width:700px){.controls .control-label{font-size:10px;margin-left:2px}}
+.heading{margin-bottom:8px}
+.controls{padding:8px 14px;gap:7px 12px;align-items:center}
+.controls .choices{gap:4px}
+.controls .choices button,.controls .enginePresets button,.controls .play{
+  font:600 12px system-ui;padding:7px 10px;border-radius:7px;line-height:1.25;min-height:32px
+}
+.controls .enginePresets{padding:0;margin:0;border:0;background:none;gap:4px}
+.controls .enginePresets small{display:none}
+.controls .play{min-width:84px;margin-left:auto}
+body.graph-view{overflow:hidden}
+body.graph-view .heading{display:flex;margin:0;padding:7px 14px 5px}
+body.graph-view .controls{display:flex;border-top:1px solid #e2e9ec}
+body.graph-view .anglebar{display:none}
+body.graph-view .illustration{height:calc(100dvh - var(--graph-chrome-height,90px));padding:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+@media(max-width:700px){.controls{gap:5px;padding:6px}.controls .choices button,.controls .enginePresets button,.controls .play{font-size:11px;padding:6px 7px}.controls .play{margin-left:0}}
+
+/* Hypothèses accessibles sous les réglages, sans empiéter sur les graphiques. */
+.theoryAssumptions{margin:10px 0 15px;border-top:1px solid #d4dfe5;border-bottom:1px solid #d4dfe5;padding:9px 3px 8px;font-size:12px;color:#415868}
+.theoryAssumptions summary{cursor:pointer;font-size:13px;font-weight:700;color:#2f4a5a}
+.theoryAssumptions p{margin:8px 0}
+.theoryAssumptions ul{margin:6px 0 9px;padding-left:23px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 22px}
+.theoryAssumptions li{padding-left:2px}
+@media(max-width:700px){.theoryAssumptions ul{grid-template-columns:1fr}}
+
+/* Ordre pédagogique des paramètres : quatre sections et sous-groupes lisibles. */
+.paramSectionTitle {margin-top:20px; scroll-margin-top:12px;}
+.paramSubhead{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin:13px 0 7px;font:700 12.5px system-ui,sans-serif;color:#3d5868}
+.paramSubhead small{font-size:11px;font-weight:450;color:#718390}
+.paramGrid.calculatedValues input[readonly]{background:#eef3f5}
+.paramGrid.calculatedValues label:has(#pAtRFA) input{background:#fff}
+@media(max-width:720px){.paramSubhead small{display:block;width:100%}}
+.combustion-summary{margin:10px 0 4px;padding:10px 12px;border:1px solid #d8e4eb;background:#f4f8fa;border-radius:8px;color:#2f4d60;font-size:13px;font-weight:650;line-height:1.5}
+.spark-comparison{margin:7px 0 10px;background:#fafcfd;border:1px solid #dbe5ea;border-radius:8px;padding:9px 11px}
+.spark-comparison summary{cursor:pointer;color:#344f60;font-size:12.5px;font-weight:730}
+.spark-comparison summary small{font-weight:400;color:#718795;margin-left:6px}
+.spark-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 4px}
+.spark-tile{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid #d9e3e8;border-radius:7px;background:white;color:#405666;font-size:12px}
+.spark-current{border-color:#9fbfcd;background:#f0f7fa}
+.spark-tile .spark-label{font-size:11px;color:#6c7f8b}
+.spark-tile strong{font-size:12px}.spark-tile b{font-size:18px;color:#234a5e;font-variant-numeric:tabular-nums}
+.spark-note{font-size:11px;color:#72818b;margin-top:6px}
+@media(max-width:700px){.spark-grid{grid-template-columns:1fr 1fr}.spark-tile{padding:6px}}
+.calculatedValues input[readonly],input#pRealMax[readonly],input#pRealAngle[readonly]{background:#edf3f6;border-color:#d4e1e6;color:#315368}
+</style>
+</head>
+<body>
+<div class="shell">
+ <div class="heading"><h1>Animation cycle moteur quatre temps — Beau de Rochas</h1></div>
+ <section class="panel" aria-label="Simulateur du moteur quatre temps">
+  <!-- Barre unique : choix de vue, courbes, architecture et animation. -->
+  <div class="controls" aria-label="Commandes principales du simulateur">
+    <button class="play" id="playPause" type="button">▶ Lancer</button>
+    <span class="control-label">Affichage</span>
+    <div class="choices" id="pvHeightButtons" role="group" aria-label="Présentation des graphiques">
+      <button type="button" data-pv-height="560" aria-pressed="true" title="Vue compacte d'origine avec les paramètres accessibles">Original</button>
+      <button type="button" data-pv-height="auto" aria-pressed="false" title="Remplit l'écran en ajustant uniquement l'échelle verticale P–V">Adapter à l’écran</button>
+    </div>
+    <span class="control-label">Cycle</span>
+    <div class="choices" id="cycleButtons" role="group" aria-label="Courbes du diagramme P–V">
+      <button type="button" data-mode="ideal" aria-pressed="true">Théorique</button>
+      <button type="button" data-mode="real" aria-pressed="false">Pratique/réel</button>
+    </div>
+    <span class="control-label">Type moteur</span>
+    <div class="enginePresets" role="group" aria-label="Architecture du moteur">
+      <button type="button" data-engine="supercarre" aria-pressed="false">Supercarré<small>90 × 60 mm</small></button>
+      <button type="button" data-engine="carre" aria-pressed="true">Carré<small>≈ 78,6 × 78,6 mm</small></button>
+      <button type="button" data-engine="longue" aria-pressed="false">Longue course<small>≈ 69,8 × 99,7 mm</small></button>
+    </div>
+  </div>
+  <div class="readouts" aria-live="off" aria-hidden="true"><div class="readout"><div class="hint">Angle vilebrequin</div><div class="number" id="thetaRead">0° <small>/ 720°</small></div></div><div class="readout"><div class="hint">Volume cylindre</div><div class="number" id="volumeRead">50 <small>cm³</small></div></div><div class="readout"><div class="hint">Pression</div><div class="number" id="pressureRead">1,02 <small>bar</small></div></div><div class="readout"><div class="hint">Temps actif</div><div class="number" id="phaseRead" style="font-size:17px;margin-top:5px">Admission</div></div></div>
+  <div class="illustration">
+   <svg id="scene" viewBox="65 0 1095 1250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="figtitle figdesc">
+    <title id="figtitle">Diagramme PV (pression et volume des gaz au-dessus du piston)</title>
+    <desc id="figdesc">Le piston se déplace en le faisant glisser horizontalement. Les repères AOA, RFA, AOE, RFE et AA se règlent directement sur l'épure ; une flèche indique le sens de rotation du vilebrequin.</desc>
+    <defs>
+     <pattern id="paperGrid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M 25 0 L 0 0 0 25" fill="none" stroke="#e8edf0" stroke-width=".65" /></pattern>
+     <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#697987"/></marker>
+     <marker id="blueArrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1677a6"/></marker>
+     <marker id="orangeArrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c47b28"/></marker>
+     <marker id="rotationArrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#38576a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></marker>
+     <marker id="pvArrowCompression" markerWidth="9" markerHeight="9" refX="7.8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8 Z" fill="#0c5ea8"/></marker>
+     <marker id="pvArrowCombustion" markerWidth="9" markerHeight="9" refX="7.8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8 Z" fill="#d52a29"/></marker>
+     <marker id="pvArrowDetente" markerWidth="9" markerHeight="9" refX="7.8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8 Z" fill="#df6f9d"/></marker>
+     <marker id="pvArrowAdmission" markerWidth="9" markerHeight="9" refX="7.8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8 Z" fill="#2e8fc6"/></marker>
+     <marker id="pvArrowEchappement" markerWidth="9" markerHeight="9" refX="7.8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8 Z" fill="#c47b28"/></marker>
+     <clipPath id="cylinderClip"><rect id="cylinderClipRect" x="338" y="490" width="397" height="150" /></clipPath>
+    </defs>
+    <!-- PV plot -->
+    <text x="334" y="26" font-size="17" font-weight="750" fill="#334957">Diagramme PV (pression et volume des gaz au-dessus du piston)</text>
+    <rect id="plotGrid" x="335" y="49" width="422" height="601" fill="url(#paperGrid)" opacity=".85" />
+    <!-- Échelle de pression linéaire, hauteur ajustable sans changer la pression maximale ni l'axe du volume. -->
+    
+    <path id="pvFrame" d="M335 55 V650 H720" stroke="#314250" stroke-width="2.0" fill="none" marker-end="url(#arrow)" />
+    <path id="pvYAxis" d="M335 650 V51" stroke="#314250" stroke-width="2.0" fill="none" marker-end="url(#arrow)" />
+    <text x="339" y="57" font-size="13" fill="#566975">P (bar)</text>
+    <text id="volumeAxisLabel" x="729" y="656" font-size="13" fill="#566975" font-weight="650">V (cm³)</text>
+        <g id="ticks"></g>
+    <!-- Alignement commun : même abscisse PMH que la face du piston, visible seulement en superposition. -->
+    <line id="pmhAlignmentGuide" x1="385" x2="385" y1="65" y2="649" stroke="#c44b46" stroke-width="0.9" stroke-dasharray="2 8" opacity=".45" pointer-events="none"/>
+    <line id="atmosGuide" x1="335" x2="625" y1="1050" y2="1050" stroke="#b8aeb0" stroke-width="1.1" stroke-dasharray="3 4" opacity=".9" pointer-events="none"/>
+    <g id="pvPaths"></g>
+    <g id="plotLegend" transform="translate(800 74)"><g aria-label="Cycle réel en couleurs selon la phase"><line x1="0" y1="0" x2="7" y2="0" stroke="#2e8fc6" stroke-width="3"/><line x1="7" y1="0" x2="14" y2="0" stroke="#0c5ea8" stroke-width="3"/><line x1="14" y1="0" x2="21" y2="0" stroke="#d52a29" stroke-width="3"/><line x1="21" y1="0" x2="28" y2="0" stroke="#df6f9d" stroke-width="3"/><line x1="28" y1="0" x2="35" y2="0" stroke="#c47b28" stroke-width="3"/></g><text x="45" y="5" font-size="13" fill="#455d68">Cycle réel</text><g aria-label="Cycle théorique en traits pleins et couleurs"><line x1="0" y1="23" x2="7" y2="23" stroke="#2e8fc6" stroke-width="3"/><line x1="7" y1="23" x2="14" y2="23" stroke="#0c5ea8" stroke-width="3"/><line x1="14" y1="23" x2="21" y2="23" stroke="#d52a29" stroke-width="3"/><line x1="21" y1="23" x2="28" y2="23" stroke="#df6f9d" stroke-width="3"/><line x1="28" y1="23" x2="35" y2="23" stroke="#c47b28" stroke-width="3"/></g><text x="45" y="28" font-size="13" fill="#657b89">Cycle théorique</text></g>
+    <!-- Synthèse des hypothèses intégrée à la zone SVG : reste visible en mode « Adapter à l’écran ». -->
+    <g id="pvAssumptionsOnGraph" aria-label="Simplifications du modèle sélectionné" pointer-events="none"></g>
+    <g id="plotAnnotations"></g>
+    <g id="pvTimingMarks" aria-label="Événements de distribution sur la courbe réelle"></g>
+    <g id="greenHandles" aria-label="Points de construction déplaçables du cycle réel"></g>
+    <line id="volumeGuide" x1="385" y1="1049" x2="385" y2="1228" stroke="#c44b46" stroke-width="2.1" stroke-dasharray="7 5" opacity=".9"/>
+    <circle id="realDot" cx="385" cy="1050" r="3" fill="#111" opacity="1" stroke="none" />
+    <circle id="idealDot" cx="385" cy="1050" r="2.6" fill="#111" opacity="0.9" stroke="none" />
+    <line id="pressureLine" x1="335" x2="385" y1="1050" y2="1050" stroke="#c44b46" stroke-dasharray="3 4" opacity=".7" />
+    <!-- Pressions instantanées à gauche de l'axe P–V, séparées des graduations fixes. -->
+    <g id="instantPressureLabels" pointer-events="none">
+      <text id="instantPressureReal" text-anchor="start" font-size="11" font-weight="400"
+        fill="#a34d4f" stroke="#fff" stroke-width="2.8" stroke-linejoin="round" paint-order="stroke"></text>
+      <text id="instantPressureIdeal" text-anchor="start" font-size="11" font-weight="400"
+        fill="#617686" stroke="#fff" stroke-width="2.8" stroke-linejoin="round" paint-order="stroke"></text>
+    </g>
+    
+    <text id="atmosLabel" x="326" y="1034" text-anchor="end" font-size="11" fill="#6c818e">P atmosphérique</text>
+    <g id="extremeLabels" text-anchor="middle" font-size="13" fill="#405767" font-weight="700"></g>
+    <!-- Valeur instantanée discrète, sans encadrement ni gras, sur le trait mobile. -->
+    <g id="instantVolumeLabel" transform="translate(385 0)" pointer-events="none">
+      <title>Volume instantané calculé, aligné sur le trait rouge du piston</title>
+      <text id="instantVolumeValue" x="0" y="640" text-anchor="middle" font-size="11.5" font-weight="400" fill="#9b6563" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" paint-order="stroke">50,0 cm³</text>
+    </g>
+    <!-- Les repères PMH/PMB sont déplacés vers le mécanisme et restent
+         alignés respectivement sur les abscisses v et V + v. -->
+    <g id="engineExtremeLabels" text-anchor="middle" pointer-events="none"></g>
+    <!-- Groupe moteur et courbes de levée rapprochés du diagramme P–V. -->
+    <g id="engineAssembly" transform="translate(0 690)">
+    <!-- cam & port header -->
+    
+    
+    <g id="cams"></g>
+    <!-- engine housing -->
+    <rect id="cylinderGas" x="338" y="490" width="31" height="150" fill="#1677a6" opacity=".13" />
+    <g id="portGas" pointer-events="none" opacity="0">
+      <path id="intakePortGas" d="M295 463 V510 C295 523 286 525 279 525 H335" fill="none" stroke="#1677a6" stroke-width="22" stroke-linecap="butt" stroke-linejoin="round" opacity="0" />
+      <path id="exhaustPortGas" d="M295 667 V621 C295 609 302 606 309 606 H335" fill="none" stroke="#c47b28" stroke-width="22" stroke-linecap="butt" stroke-linejoin="round" opacity="0" />
+    </g>
+    <path id="cylinderWalls" d="M335 490 H715 M335 640 H715" stroke="#2d404c" stroke-width="7" stroke-linecap="square" fill="none" />
+    <path id="cylinderHead" d="M335 490 V507 M335 624 V640" stroke="#2d404c" stroke-width="6" />
+    <path id="cylinderHeadMid" d="M335 543 V588" stroke="#2d404c" stroke-width="7" />
+    <!-- Conduits : reproduction des QUATRE parois noires du croquis isolé,
+         sans ajout de rectangles ni de contours superposés. -->
+    <g id="headPorts" fill="none" stroke="#080808" stroke-width="4.1"
+       stroke-linecap="butt" stroke-linejoin="round" pointer-events="none"
+       aria-label="Conduits séparés d'admission et d'échappement">
+      <!-- Admission : paroi gauche, long coude et lèvre inférieure à y=543. -->
+      <path d="M271 463 V521 C271 533 289 543 309 543 H335" />
+      <!-- Admission : paroi droite, coude court et lèvre supérieure à y=507. -->
+      <path d="M320 463 V499 C320 504 326 507 335 507" />
+      <!-- Échappement : lèvre supérieure à y=588 et paroi gauche descendante. -->
+      <path d="M335 588 H309 C289 588 271 601 271 613 V667" />
+      <!-- Échappement : lèvre inférieure à y=624 et paroi droite descendante. -->
+      <path d="M335 624 C326 624 320 629 320 635 V667" />
+    </g>
+    <g id="valveShapes"></g>
+    <!-- piston group -->
+    <g id="piston" role="slider" aria-label="Déplacer le piston horizontalement pour faire tourner le vilebrequin" tabindex="0" aria-valuemin="0" aria-valuemax="720" aria-valuenow="0">
+      <title>Faire glisser le piston de gauche à droite pour piloter le cycle</title>
+      <rect x="0" y="493" width="60" height="144" rx="2" fill="#dce4e8" stroke="#2e4655" stroke-width="3"/>
+      <rect x="5" y="495" width="9" height="140" fill="#8c9ca8" opacity=".28"/>
+      <circle cx="30" cy="565" r="10" fill="#fff" stroke="#2d4655" stroke-width="4"/>
+      <!-- Phase du cycle affichée à la verticale dans le bandeau grisé du piston. -->
+      <text id="cylinderPhaseLabel" x="9.5" y="565" text-anchor="middle" dominant-baseline="middle"
+        transform="rotate(-90 9.5 565)"
+        font-family="system-ui, sans-serif" font-size="11.5" font-weight="400"
+        fill="#2e8fc6" opacity="0.95" pointer-events="none">ADMISSION</text>
+    </g>
+    <!-- Bougie simplifiée et intégrée à la culasse, sans câble extérieur ni légende redondante. -->
+    <g id="sparkplug" aria-label="Bougie d’allumage intégrée à la culasse">
+      <rect x="311" y="559.5" width="14" height="11" rx="2" fill="#f2f5f7" stroke="#435966" stroke-width="2.4"/>
+      <rect x="325" y="557.5" width="9" height="15" rx="1" fill="#e4ebef" stroke="#435966" stroke-width="2.2"/>
+      <path d="M335 562 H346 V568 H335" fill="none" stroke="#435966" stroke-width="2.1" stroke-linejoin="round"/>
+      <!-- Éclair visible uniquement à partir de l'AA, placé au bout de l'électrode. -->
+      <g id="sparkFlash" opacity="0" pointer-events="none" aria-label="Étincelle à l'avance à l'allumage">
+        <circle cx="351" cy="565" r="12" fill="#ffd351" opacity=".30" />
+        <path id="spark" d="M349 553 L344 566 L350 563 L347 578 L360 560 L352 563 L356 554 Z"
+              fill="#ffd335" stroke="#bd6818" stroke-width="1.1" stroke-linejoin="round" />
+      </g>
+    </g>
+    <!-- engine connecting rod crank -->
+    <!-- Épure tournée de 90° par rapport à la représentation verticale : PMH à gauche et PMB à droite, sur l'axe du piston. -->
+    <circle id="crankPinOrbit" cx="885" cy="565" r="118" fill="none"
+      stroke="#a5b4bd" stroke-dasharray="5 6" stroke-width="1.6" opacity=".8"
+      pointer-events="none" aria-label="Trajectoire circulaire du maneton"/>
+    <!-- Cycle théorique : un seul demi-cercle coloré visible à la fois,
+         en alternance selon les quatre phases du cycle (0 à 720 degrés). -->
+    <g id="idealCrankPhaseArcs" style="display:none" pointer-events="none"
+       aria-label="Arc de la phase active sur le vilebrequin : admission, compression, détente ou échappement"></g>
+    <g id="integratedTiming" aria-label="Épure de distribution horizontale : PMH à gauche, PMB à droite">
+      <line id="timingAxisH" x1="758" y1="565" x2="1012" y2="565" stroke="#cfd9de" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <line id="timingAxisV" x1="885" y1="438" x2="885" y2="692" stroke="#cfd9de" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <g id="rotationDirection" pointer-events="none" aria-label="Rotation normale du vilebrequin, dans le sens horaire">
+        <path id="rotationArc" fill="none" stroke="#38576a" stroke-width="2.8" stroke-linecap="round" marker-end="url(#rotationArrow)"/>
+        <text id="rotationHint" x="885" y="738" text-anchor="middle" font-size="11.5" font-weight="700" fill="#38576a"></text>
+      </g>
+      <text id="timingPMH" x="741" y="558" text-anchor="end" fill="#536d7e" font-size="13" font-weight="750">PMH</text>
+      <text id="timingPMB" x="1022" y="558" fill="#536d7e" font-size="13" font-weight="750">PMB</text>
+      <text id="timingTitle" x="885" y="700" text-anchor="middle" fill="#405766" font-size="13" font-weight="700" pointer-events="none">ÉPURE DE DISTRIBUTION</text>
+      <circle id="timingNeedleDot" cx="767" cy="565" r="6" stroke="white" stroke-width="2" fill="#111"/>
+    </g>
+    <!-- Flèche du sens de rotation aussi en théorique, hors de l'épure masquée. -->
+    <g id="rotationDirectionAlways" style="display:none" pointer-events="none"
+       aria-label="Sens de rotation du vilebrequin dans le mode théorique">
+      <path id="rotationArcAlways" fill="none" stroke="#38576a" stroke-width="2.8"
+            stroke-linecap="round" marker-end="url(#rotationArrow)"/>
+    </g>
+    <line id="connectingRodOuter" x1="415" y1="565" x2="767" y2="565" stroke="#263d49" stroke-width="15" stroke-linecap="round" />
+    <line id="connectingRodInner" x1="415" y1="565" x2="767" y2="565" stroke="#9db0bb" stroke-width="7" stroke-linecap="round" />
+    <line id="crankArm" x1="885" y1="565" x2="767" y2="565" stroke="#253d4b" stroke-width="20" stroke-linecap="round" />
+    <circle id="crankPin" cx="767" cy="565" r="12" stroke="#293e4a" stroke-width="4.5" fill="#eef3f5" />
+    <circle id="crankCenter" cx="885" cy="565" r="16" fill="#fff" stroke="#263e49" stroke-width="6" />
+    <circle id="crankCenterDot" cx="885" cy="565" r="4" fill="#475f6d"/>
+    <!-- Zone de prise transparente sur le maneton : rotation manuelle dans les deux sens. -->
+    <circle id="crankPinDragHit" cx="767" cy="565" r="23" fill="transparent"
+            stroke="none" pointer-events="all" role="slider" tabindex="0"
+            aria-label="Tourner le maneton pour piloter le cycle du vilebrequin"
+            aria-valuemin="0" aria-valuemax="720" aria-valuenow="0">
+      <title>Saisir le maneton et le faire tourner ; les flèches du clavier fonctionnent aussi</title>
+    </circle>
+    <!-- Repères interactifs au premier plan, au-dessus de la bielle et de la manivelle. -->
+    <g id="timingMarks" transform="translate(0 0)" aria-label="Réglages angulaires déplaçables à la souris"></g>
+    <!-- Angle instantané du vilebrequin, toujours près du maneton. -->
+    <text id="crankPinAngle" x="787" y="546" text-anchor="start" font-family="system-ui, sans-serif"
+          font-size="12.5" font-weight="500" fill="#344b5c" paint-order="stroke"
+          stroke="#fff" stroke-width="3.4" stroke-linejoin="round" pointer-events="none">0°</text>
+
+    <!-- Diagramme des levées sous les cames, près de la culasse.
+         Son emplacement vertical est calculé à partir du rayon de vilebrequin. -->
+    <g id="valveLiftDiagram" transform="translate(0 710)"
+       aria-label="Diagramme des levées d'admission et d'échappement sur 720 degrés, synchronisé avec les réglages">
+      <g id="valveLiftDiagramContent" pointer-events="none"></g>
+      <g id="valveLiftDiagramCursor" pointer-events="none">
+        <line id="liftCurrentLine" x1="194" y1="39" x2="194" y2="138" stroke="#9a5360" stroke-width="1.35" stroke-dasharray="3 4" opacity=".7" />
+        <circle id="liftCurrentExhaust" cx="194" cy="138" r="3.2" fill="#c47b28" stroke="white" stroke-width=".8" />
+        <circle id="liftCurrentIntake" cx="194" cy="138" r="3.2" fill="#1677a6" stroke="white" stroke-width=".8" />
+      </g>
+      <!-- Commande intégrée à l'axe horizontal du graphique de levée :
+           le curseur remplace le réglage Angle autrefois situé sous le dessin. -->
+      <g id="liftAxisSlider" role="slider" tabindex="0"
+         aria-label="Angle du vilebrequin, déplacer sur l'axe de levée des soupapes"
+         aria-valuemin="0" aria-valuemax="720" aria-valuenow="0"
+         style="cursor:ew-resize;touch-action:none">
+        <title>Glisser le curseur sur l'axe ou utiliser les touches fléchées</title>
+        <rect id="liftAxisHit" x="0" y="125" width="720" height="28"
+              fill="transparent" pointer-events="all" />
+        <circle id="liftAxisThumb" cx="360" cy="138" r="7.5"
+                fill="#344e60" stroke="#fff" stroke-width="2"
+                pointer-events="all" />
+      </g>
+    </g>
+    <!-- En cycle théorique : graduation autonome de l'angle, sans courbes de levée. -->
+    <g id="idealAngleTimeline" transform="translate(0 710)" style="display:none"
+       aria-label="Commande de l'angle du vilebrequin en cycle théorique">
+      <g id="idealAngleDrawing" pointer-events="none"></g>
+      <g id="idealAngleSlider" role="slider" tabindex="0"
+         aria-label="Angle du vilebrequin, cycle théorique (0 à 720 degrés)"
+         aria-valuemin="0" aria-valuemax="720" aria-valuenow="0"
+         style="cursor:ew-resize;touch-action:none">
+        <title>Glisser le point noir ou utiliser les flèches pour piloter le moteur</title>
+        <rect id="idealAngleHit" x="0" y="23" width="720" height="28" fill="transparent" pointer-events="all"/>
+        <circle id="idealAngleThumb" cx="0" cy="37" r="7.5" fill="#233f50" stroke="#fff" stroke-width="2" pointer-events="all"/>
+      </g>
+    </g>
+    <g id="liftToEngineGuides" pointer-events="none">
+      <line id="liftGuidePMHCross" x1="385" x2="385" y1="660" y2="730" stroke="#a9b6be" stroke-width="1.2" stroke-dasharray="4 5" opacity="0.9" />
+      <line id="liftGuidePMB" x1="505" x2="505" y1="660" y2="730" stroke="#a9b6be" stroke-width="1.2" stroke-dasharray="4 5" opacity="0.9" />
+    </g>
+    </g>
+   </svg>
+  </div>
+    <div class="anglebar"><input type="range" id="angle" min="0" max="720" step="0.5" value="0" hidden aria-hidden="true" tabindex="-1"><div class="greenHint"><span>✣ Glisser directement les <strong>points de construction</strong> sur le diagramme : les paramètres correspondants se mettent à jour. Certains petits ronds sont des points modifiables ; les points de combustion (PMH et Pmax) sont maintenant des résultats non déplaçables. La pression admission cylindre est estimée par la masse d’air et les températures ; la pression au PMB est la moyenne entre celle-ci et la pression au RFA. Au RFA, l’inertie des gaz ajoute une masse de charge paramétrée : la pression est calculée par défaut, mais reste réglable à la souris. Le point de pompage admission modifie le taux de remplissage lorsqu’il est déplacé verticalement. Les pressions AOA, RFE et PMB échappement restent calculées ; l’angle AA est libre, sa pression est calculée. Le point de combustion et Pmax sont calculés à partir de Q, de la vitesse de flamme et de l’AA.</span><span id="greenReadouts" aria-live="polite"></span><button id="resetGreen" type="button">Réinitialiser les points de réglage</button></div></div>
+  <section class="parameters" aria-label="Paramètres modifiables du moteur">
+<div class="paramHead"><strong>Paramètres du moteur</strong><span>Les paramètres sont regroupés dans l’ordre du cycle. Les champs grisés sont calculés ; le RFA reste corrigeable à la souris. Enregistre tes réglages pour retrouver ton tracé à l’ouverture.</span><button id="saveParamsDefault" type="button" title="Mémoriser les paramètres actuels dans ce navigateur">Enregistrer ces valeurs par défaut</button>
+<button id="resetParams" type="button" title="Revenir aux paramètres mémorisés">Valeurs par défaut</button>
+<button id="factoryParams" type="button" title="Effacer les réglages personnels enregistrés">Réglages d’origine</button></div>
+<details id="idealAssumptions" class="theoryAssumptions" open>
+  <summary>Les 5 grandes simplifications du cycle théorique</summary>
+  <p>Pour représenter le moteur à quatre temps par un cycle idéal d’Otto, on retient cinq hypothèses principales :</p>
+  <ul>
+    <li><strong>Combustion instantanée au PMH :</strong> apport de chaleur à volume constant (isochore).</li>
+    <li><strong>Compression et détente adiabatiques réversibles :</strong> aucun échange thermique avec les parois, aucune dissipation (transformations isentropiques).</li>
+    <li><strong>Aucune perte de charge ni contre-pression :</strong> admission et échappement schématisés à la pression atmosphérique.</li>
+    <li><strong>Soupapes instantanées :</strong> ouverture et fermeture directement aux points morts, sans avance, retard ni levée progressive.</li>
+    <li><strong>Aucune inertie des gaz :</strong> pas d’ondes de pression ni d’effets dynamiques du remplissage et de la vidange.</li>
+  </ul>
+  <p><strong>Précision :</strong> le cycle d’Otto fermé comprend deux transformations isentropiques et deux isochores. L’admission et l’échappement sont représentés en complément pour illustrer les quatre temps.</p>
+</details>
+<details id="realAssumptions" class="theoryAssumptions" open style="display:none">
+  <summary>Cycle pratique/réel : phénomènes physiques et limites du modèle</summary>
+  <p><strong>Par rapport au cycle théorique, le fonctionnement réel est moins idéal :</strong> la combustion, les échanges gazeux et les mouvements des soupapes se déroulent sur une durée finie. Les phénomènes ci-dessous expliquent notamment l’avance à l’allumage et l’adaptation de l’épure de distribution.</p>
+  <ul>
+    <li><strong>Combustion déflagrante progressive :</strong> sa durée dépend notamment de la <strong>qualité du mélange (richesse, homogénéité)</strong>, de la masse de charge, du délai d’inflammation du carburant et de la vitesse de propagation de la flamme. Elle nécessite une <strong>avance à l’allumage (AA)</strong> pour placer la montée en pression au bon moment.</li>
+    <li><strong>Échanges de chaleur avec les parois :</strong> pendant la compression et la détente, les gaz échangent de l’énergie avec la culasse, le cylindre et le piston, puis indirectement avec le milieu extérieur. Cela modifie leur température et la <strong>pression dans le cylindre</strong> : les transformations ne sont plus strictement adiabatiques.</li>
+    <li><strong>Étanchéité perfectible (fuites aux segments et/ou aux soupapes) :</strong> ces fuites peuvent provoquer une <strong>perte de pression à la compression et/ou à la détente</strong>, en raison de la diminution de la masse de gaz enfermée, et réduire le travail indiqué.</li>
+    <li><strong>Pertes par pompage :</strong> à l’admission, les restrictions créent une <strong>perte de charge</strong> (pression d’admission généralement inférieure à la pression atmosphérique) ; à l’échappement, l’écoulement rencontre une <strong>contre-pression</strong> (pression d’échappement généralement supérieure à l’atmosphère). Elles pénalisent le remplissage et le travail du cycle.</li>
+    <li><strong>Vitesse et inertie de la veine gazeuse :</strong> les gaz continuent de circuler sous l’effet de leur inertie après les points morts. Des <strong>ondes et oscillations de pression</strong> (phénomènes acoustiques) apparaissent dans les conduits ; elles participent à la nécessité d’une <strong>épure de distribution adaptée</strong>.</li>
+    <li><strong>Ouverture et fermeture progressives :</strong> les soupapes suivent un <strong>profil de came</strong> : la levée et la section de passage évoluent progressivement, sans basculement instantané.</li>
+    <li><strong>Épure de distribution adaptée :</strong> AOA, RFA, AOE et RFE décalent les événements par rapport aux PMH/PMB pour tenir compte de la levée progressive, de l’inertie des gaz et des pertes de charge.</li>
+  </ul>
+  <p><strong>Limites de ce simulateur :</strong> ces effets sont présentés qualitativement ou approximés, mais ils ne font pas tous l’objet d’un calcul physique.</p>
+  <ul>
+    <li><strong>Courbe P–V interpolée :</strong> Les angles caractéristiques et certaines pressions sont réglables ; la pression de compression jusqu’à AA est calculée selon le modèle simplifié, sans simulation complète des débits et de la combustion.</li>
+    <li><strong>Compression et détente approchées :</strong> la compression dépend du rapport des volumes, de γ et d’un coefficient global k atténuant la hausse de pression (fuites et échanges thermiques) ; l’indice de remplissage P admission/P atmosphère est seulement indicatif. La détente reste représentée par une loi polytropique, sans calcul explicite des transferts thermiques ni du blow-by.</li>
+    <li><strong>Combustion progressive approchée :</strong> la chaleur Q est répartie selon une loi de Wiebe ; la durée angulaire découle de la vitesse moyenne apparente de flamme et du régime choisi. La pression maximale et sa position sont calculées, sans prédiction de la chimie, des turbulences ou du cliquetis.</li>
+    <li><strong>Admission et pompage paramétrés :</strong> la masse d’air et les pressions sont estimées par la loi des gaz parfaits, un rendement volumétrique de référence et un gain d’inertie choisi. Aucun débit, échange thermique détaillé ou calcul d’ondes dans les conduits n’est simulé.</li>
+    <li><strong>Ondes et inertie non calculées :</strong> le simulateur ne prédit pas les résonances ni les oscillations de pression acoustiques.</li>
+    <li><strong>Profils de cames schématiques :</strong> leur forme est illustrative ; la levée ne détermine pas quantitativement le débit de gaz.</li>
+    <li><strong>Gaz et combustion homogénéisés :</strong> température, composition, gaz résiduels et propriétés thermodynamiques ne sont pas suivis finement.</li>
+    <li><strong>Frottements mécaniques et dynamique du régime ignorés :</strong> le travail P–V est indiqué ; la vitesse variable de l’animation est pédagogique et non une prédiction du régime moteur.</li>
+  </ul>
+  <p><strong>À retenir :</strong> l’échange de chaleur et les fuites contribuent à modifier la pression réelle, mais leurs effets ne sont pas calculés séparément ici. Les surfaces des cycles théorique et pratique/réel ne permettent donc pas à elles seules de comparer les rendements.</p>
+</details>
+<div id="presetInfo" role="status" aria-live="polite"></div>
+<div class="paramSectionTitle" id="sectionGeometry">1. Géométrie du moteur <small>Dimensions et cinématique bielle-manivelle</small></div>
+<div class="paramGrid">
+<label>Alésage D (mm)<input id="bore" type="number" min="60" max="110" step="any" value="90"></label>
+<label>Course C (mm)<input id="stroke" type="number" min="50" max="110" step="any" value="60"></label>
+<label>Chambre v (cm³)<input id="chamber" type="number" min="25" max="100" step="0.1" value="35"></label>
+<label>Rapport bielle / rayon de manivelle (L/R)<input id="rodRatio" type="number" min="2.2" max="4.5" step="0.1" value="2.8" title="L : longueur de bielle ; R : rayon de manivelle = course / 2"></label>
+</div>
+<div class="constraintHint" id="coherenceBounds" aria-live="polite"></div>
+<div class="paramSectionTitle" id="sectionFilling">2. Remplissage et échanges gazeux <small>Distribution, pression de tubulure, masse d’air et inertie</small></div>
+<div class="paramSubhead">Épure de distribution <small>Angles réglables aussi sur le dessin</small></div>
+<div class="paramGrid">
+<label>AOA · avance ouverture admission (° avant PMH)<input id="aoa" type="number" min="0" max="35" step="1" value="15"></label>
+<label>RFA · retard fermeture admission (° après PMB)<input id="rfa" type="number" min="0" max="75" step="1" value="30"></label>
+<label>AOE · avance ouverture échappement (° avant PMB)<input id="aoe" type="number" min="0" max="90" step="1" value="40"></label>
+<label>RFE · retard fermeture échappement (° après PMH)<input id="rfe" type="number" min="0" max="35" step="1" value="16"></label>
+</div>
+<div class="paramSubhead">Conditions d’admission et masse d’air <small>Paramètres d’entrée pour la loi des gaz parfaits</small></div>
+<div class="paramGrid">
+<label>Pression atmosphérique (bar abs.)<input id="p0" type="number" min="0.8" max="1.2" step="0.05" value="1"></label>
+<label>Pression tubulure admission (bar abs.)<input id="manifoldPressure" type="number" min="0.35" max="1.4" step="0.01" value="0.95" title="Pression absolue mesurée ou estimée dans la tubulure d’admission, distincte de la pression atmosphérique"></label>
+<label>Température air tubulure (°C)<input id="manifoldTemp" type="number" min="-10" max="90" step="1" value="20"></label>
+<label>Température gaz cylindre à l’admission (°C)<input id="cylinderTemp" type="number" min="-10" max="150" step="1" value="30" title="Température moyenne simplifiée du mélange de gaz dans le cylindre au voisinage de l’admission et du RFA"></label>
+<label>Taux de remplissage de référence (%)<input id="volumetricEfficiency" type="number" min="40" max="115" step="1" value="90" title="Masse d’air neuf rapportée à la masse théorique dans la cylindrée à la densité de tubulure, avant gain d’inertie supplémentaire"></label>
+</div>
+<div class="paramSubhead">Inertie de la veine gazeuse <small>Gain estimé de masse d’air admise après le PMB</small></div>
+<div class="paramGrid">
+<label>Gain estimé par inertie des gaz à l’admission (%)<input id="inertiaGain" type="number" min="0" max="25" step="1" value="5" title="Masse d’air neuf supplémentaire supposée piégée entre le PMB et le RFA, en pourcentage de la masse de référence calculée. Effet empirique, sans calcul du régime ni des conduits."></label>
+</div>
+<div class="paramSubhead">Pressions issues du remplissage <small>Calculées automatiquement, sauf correction manuelle possible au RFA</small></div>
+<div class="paramGrid calculatedValues">
+<label>Pression admission cylindre (bar abs. · calculée)<input id="intakePressure" type="number" min="0.2" max="2" step="0.001" value="0.90" readonly title="Estimation de la pression au point de pompage d’admission à partir de la masse gazeuse, du volume et de la température"></label>
+<label>Pression au PMB admission, 180° (bar abs. · calculée)<input id="pAt180" type="number" min="0.3" max="1.7" step="0.01" value="0.94" readonly title="Moyenne entre la pression admission cylindre et la pression au RFA"></label>
+<label>Pression au RFA (bar abs. · calculée par défaut, réglable)<input id="pAtRFA" type="number" min="0.25" max="2.5" step="0.001" value="1.00" title="Calculée à partir des masses et des températures ; déplacement vertical à la souris ou saisie ici = correction manuelle"><button class="rfa-reset" id="resetRFACalculated" type="button">↺ Revenir à la pression RFA calculée</button></label>
+</div>
+<div class="modelNote">La masse d’air neuf est estimée à partir de la densité dans la tubulure, de la cylindrée et du taux de remplissage de référence. Une masse résiduelle est approximée dans le volume mort. Le gain d’inertie ajoute une masse d’air entre PMB et RFA ; la pression se déduit ensuite de P = mRT/V. <strong>Au PMB admission :</strong> P = [P admission cylindre + P(RFA)] / 2. Le point RFA est calculé par défaut, mais reste libre en pression à la souris.</div>
+<div class="paramSectionTitle" id="sectionCombustion">3. Combustion et propriétés du gaz <small>Allumage, chaleur théorique apportée et coefficient adiabatique</small></div>
+<div class="paramGrid">
+<label>AA · avance à l’allumage (° avant PMH)<input id="aa" type="number" min="0" max="40" step="1" value="10"></label>
+<label>Chaleur apportée au gaz Q<sub>in</sub> (J / cycle / cylindre)<input id="heatInput" type="number" min="10" max="1600" step="1" value="220" title="Chaleur théorique reçue par le fluide pendant la combustion isochore ; ce n’est pas l’énergie chimique totale du carburant."></label>
+<label>Vitesse moyenne de propagation de flamme (m/s)<input id="flameSpeed" type="number" min="6" max="35" step="0.5" value="15" title="Vitesse moyenne apparente du front de flamme, simplifiée, supposée constante pour comparer les avances. Distincte de la vitesse des gaz."></label>
+<label>Régime moteur N (tr/min)<input id="engineRPM" type="number" min="800" max="5500" step="100" value="2500" title="Nécessaire pour convertir la vitesse du front de flamme en degrés de vilebrequin"></label>
+<label>Coefficient adiabatique γ<input id="gamma" type="number" min="1.2" max="1.45" step="0.01" value="1.3"></label>
+</div>
+<div class="modelNote">La vitesse de combustion est représentée par une <strong>vitesse moyenne apparente du front de flamme</strong>, et non par une vitesse turbulente réellement prédite. La distance caractéristique parcourue est fixée à 45 % de l’alésage. À régime constant, elle détermine la durée angulaire de combustion. La chaleur Q est distribuée progressivement suivant une loi de Wiebe : le maximum de pression et son angle sont <strong>calculés</strong> lorsque l’on modifie l’AA, la géométrie, la vitesse de flamme ou Q.</div>
+<!-- Valeur de la pression à AA maintenue dans le modèle et dans les anciennes sauvegardes, mais jamais saisie : calcul automatique. -->
+<input id="pAtAA" type="hidden" min="0" max="100" value="4">
+<div class="combustion-summary" id="combustionSummary" role="status" aria-live="polite">Pmax et son angle sont calculés à partir de la combustion progressive.</div>
+<details class="spark-comparison" open>
+ <summary>Influence de l’avance sur la pression maximale <small>Comparaison à Q, vitesse de flamme et régime identiques</small></summary>
+ <div class="spark-grid" id="sparkComparison" aria-live="polite"></div>
+ <div class="spark-note">Les trois scénarios appliquent exactement le même modèle aux mêmes conditions ; seul l’angle d’avance change. Des avances excessives ne sont pas forcément avantageuses : le calcul ne prédit ni cliquetis, ni puissance effective, ni rendement optimal.</div>
+</details>
+<div class="energyReadouts" aria-live="polite" aria-label="Bilan énergétique des cycles">
+ <span>Travail net théorique : <b id="workTheoretical">—</b></span>
+ <span>Travail net réel (surface P–V) : <b id="workReal">—</b></span>
+ <span>Rendement d’Otto : <b id="etaIdeal">—</b></span>
+ <span>Chaleur théorique apportée Q<sub>in</sub> : <b id="heatIdeal">—</b></span>
+ <span>Pression max théorique calculée P₃ : <b id="p3Calculated">—</b></span>
+</div>
+<div class="energyDisclaimer">La chaleur Q<sub>in</sub> est celle <em>transférée au gaz</em> dans le cycle théorique, pas directement l’énergie chimique du carburant. La pression P₃ en découle automatiquement. Les travaux nets (J/cycle/cylindre) sont calculés sur les diagrammes. Les deux modèles utilisent désormais le même Q apporté au gaz, mais pas les mêmes hypothèses de compression, transferts thermiques ou état initial : leurs travaux ne permettent pas, à eux seuls, de comparer des rendements mesurés.</div>
+<div class="paramSectionTitle" id="sectionReal">4. Cycle réel — ajustements de forme <small>Atténuation de compression, combustion réelle, détente et pompage</small></div>
+<div class="paramSubhead">Compression réelle et résultats de combustion <small>Pmax et son angle ne sont plus des paramètres imposés</small></div>
+<div class="paramGrid">
+<label>Coefficient d’atténuation de compression k (0 à 1)
+  <input id="compressionFactor" type="number" min="0" max="1" step="0.01" value="0.35"
+    title="1 : compression sans atténuation supplémentaire ; 0 : aucune élévation de pression depuis RFA. Représente globalement les pertes aux parois et les fuites. Le remplissage influence déjà la masse et la pression au RFA ; il n’est pas appliqué une seconde fois."></label>
+<label>Pression maximale de combustion (bar abs. · calculée)<input id="pRealMax" type="number" min="0" max="200" step="0.01" value="10" readonly title="Résultat du modèle progressif de combustion, non réglable manuellement"></label>
+<label>Angle de Pmax (° après PMH ; − = avant · calculé)<input id="pRealAngle" type="number" min="-50" max="130" step="0.1" value="10" readonly title="Angle du maximum de pression déterminé automatiquement depuis le début d’allumage"></label>
+</div>
+<div class="paramSubhead">Détente, échappement et pompage <small>Valeurs et repères réglables sur le diagramme</small></div>
+<div class="paramGrid">
+<label>Pression fin détente à AOE (bar abs.)<input id="pAtAOE" type="number" min="1.1" max="5" step="0.1" value="2"></label>
+<label>Contre-pression échappement (bar au-dessus de P atm)<input id="backPressure" type="number" min="0" max="0.5" step="0.01" value="0.12"></label>
+<label>Angle du point de contre-pression (° vilebrequin)<input id="exhaustPointAngle" type="number" min="560" max="690" step="0.1" value="640.3"></label>
+<label>Angle du point de pression admission cylindre (° vilebrequin)<input id="intakePointAngle" type="number" min="36" max="170" step="0.1" value="79.7"></label>
+</div>
+<div class="paramSubhead">Autres pressions de construction <small>Déduites automatiquement des pressions de référence</small></div>
+<div class="paramGrid calculatedValues">
+<label>Pression échappement au PMB, 540° (bar abs. · calculée)<input id="pAt540" type="number" min="0.45" max="3.5" step="0.01" value="1.56" readonly title="Moyenne de la pression à AOE et de la pression absolue de contre-pression"></label>
+<label>Pression à AOA (bar abs. · calculée)<input id="pAtAOA" type="number" min="0.45" max="1.8" step="0.01" value="1.06" readonly title="Moyenne entre la pression absolue de contre-pression et la pression atmosphérique"></label>
+<label>Pression à RFE (bar abs. · calculée)<input id="pAtRFE" type="number" min="0.45" max="1.8" step="0.01" value="0.95" readonly title="Moyenne entre la pression atmosphérique et la pression d’admission absolue"></label>
+</div>
+<div class="modelNote">PMB échappement (540°) : P = [P(AOE) + P contre-pression absolue] / 2. AOA : moyenne entre pression atmosphérique et contre-pression absolue ; RFE : moyenne entre pression atmosphérique et pression admission cylindre. <strong>Ces paramètres de forme ne constituent pas un rendement moteur mesuré.</strong></div>
+<div id="parameterWarning" role="status"></div>
+<div id="realModelInfo" aria-live="off"></div>
+<div class="calcs"><table><thead><tr><th>Valeur calculée</th><th>Résultat</th><th>Formule</th></tr></thead><tbody>
+<tr><td>Cylindrée unitaire V</td><td id="cSwept"></td><td>π × D² × C / 4</td></tr>
+<tr><td>Volume au PMB</td><td id="cVmax"></td><td>V + v</td></tr>
+<tr><td>Rapport volumétrique ε</td><td id="cEpsilon"></td><td>(V + v) / v</td></tr>
+<tr><td>Rayon de manivelle R</td><td id="cRadius"></td><td>C / 2</td></tr>
+<tr><td>Longueur de bielle L</td><td id="cRod"></td><td>(L/R) × R</td></tr>
+<tr><td>Rapport bielle / manivelle L/R</td><td id="cRodRatio"></td><td>L / R</td></tr>
+<tr><td>Rapport inverse R/L</td><td id="cInvRodRatio"></td><td>R / L</td></tr>
+<tr><td>Pression fin compression théorique P₂ (PMH)</td><td id="cP2"></td><td>P<sub>atm</sub> × ε<sup>γ</sup></td></tr>
+<tr><td>Chaleur apportée au cycle théorique Q<sub>in</sub></td><td id="cQIn"></td><td>Paramètre de combustion isochore</td></tr>
+<tr><td>Pression maximale de combustion théorique P₃ (PMH)</td><td id="cP3"></td><td>P₂ + (γ − 1) × Q<sub>in</sub> / (0,1 × v), en bar si v est en cm³</td></tr>
+<tr><td>Pression fin détente théorique P₄ (PMB)</td><td id="cP4"></td><td>P₃ / ε<sup>γ</sup></td></tr>
+<tr><td>Pression tubulure admission</td><td id="cManifoldPressure"></td><td>Paramètre d’entrée (bar abs.)</td></tr>
+<tr><td>Densité air dans la tubulure</td><td id="cManifoldDensity"></td><td>ρ = P<sub>tubulure</sub> / (287 × T<sub>tubulure</sub>)</td></tr>
+<tr><td>Masse d’air neuf de référence (mg/cycle/cyl.)</td><td id="cFreshMass"></td><td>η<sub>v</sub> × ρ<sub>tubulure</sub> × V<sub>cylindrée</sub></td></tr>
+<tr><td>Masse résiduelle approximée (mg)</td><td id="cResidualMass"></td><td>ρ<sub>tubulure</sub> × v (hypothèse simplificatrice)</td></tr>
+<tr><td>Supplément de masse par inertie (mg)</td><td id="cInertiaMass"></td><td>m<sub>air neuf</sub> × gain d’inertie (%)</td></tr>
+<tr><td>Masse équivalente totale au RFA (mg)</td><td id="cRFAMass"></td><td>m<sub>air neuf</sub> + m<sub>résiduelle</sub> + m<sub>inertie</sub></td></tr>
+<tr><td>Admission cylindre, milieu de course</td><td id="cPAdmMid"></td><td>P = m(à mi-course) × 287 × T<sub>cylindre</sub> / V(à mi-course)</td></tr>
+<tr><td>PMB admission (moyenne calculée)</td><td id="cPAt180"></td><td>[P<sub>admission cylindre</sub> + P<sub>RFA</sub>] / 2</td></tr>
+<tr class="emphasis"><td><strong>Pression au RFA calculée par la masse</strong></td><td id="cRFATheoretical"></td><td>(m<sub>RFA</sub> × 287 × T<sub>cylindre</sub>) / V<sub>RFA</sub></td></tr>
+<tr><td>Pression au RFA utilisée pour la compression</td><td id="cRFAUsed"></td><td>Calculée par défaut, ou corrigée à la souris</td></tr>
+<tr><td>Masse gazeuse correspondant au RFA retenu</td><td id="cRFAMassUsed"></td><td>P<sub>RFA utilisé</sub> × V<sub>RFA</sub> / (287 × T<sub>cylindre</sub>) (inférée si correction manuelle)</td></tr>
+<tr><td>Échappement, milieu de course (réel)</td><td id="cPExhMid"></td><td>P<sub>atm</sub> + contre-pression échappement</td></tr>
+<tr><td>Angle début allumage réel</td><td id="cIgnitionAngle"></td><td>360° − AA</td></tr>
+<tr><td>Taux de remplissage de référence η<sub>v</sub></td><td id="cFillIndex"></td><td>Paramètre de masse d’air neuf, distinct du gain d’inertie</td></tr>
+<tr><td>Coefficient d’atténuation k</td><td id="cCompFactor"></td><td>Réglage global des pertes par fuites et échanges thermiques</td></tr>
+<tr><td>Volume au RFA</td><td id="cVRFA"></td><td>V(180° + RFA)</td></tr>
+<tr><td>Volume au début d’allumage AA</td><td id="cVAA"></td><td>V(360° − AA)</td></tr>
+<tr><td><strong>Pression réelle au début d’allumage AA (calculée)</strong></td><td id="cPCompReal"></td><td>P<sub>RFA</sub> + k × P<sub>RFA</sub> × [(V<sub>RFA</sub> / V<sub>AA</sub>)<sup>γ</sup> − 1]</td></tr>
+<tr><td>Exposant polytropique équivalent (indicateur uniquement)</td><td id="cNComp"></td><td>ln(P<sub>AA</sub>/P<sub>RFA</sub>) / ln(V<sub>RFA</sub>/V<sub>AA</sub>) ; non utilisé pour tracer la compression</td></tr>
+<tr class="emphasis"><td><strong>Pression maximale calculée Pmax</strong></td><td id="cPeakPressure"></td><td>Maximum de P(θ) calculé avec Q, V(θ), γ et la loi de Wiebe</td></tr>
+<tr class="emphasis"><td><strong>Angle de Pmax calculé</strong></td><td id="cPeakAngle"></td><td>Position du maximum dans le cycle, comparée au PMH à 360°</td></tr>
+<tr><td>Volume au maximum de pression</td><td id="cVPeak"></td><td>V(θ<sub>max</sub>) par la cinématique bielle–manivelle</td></tr>
+<tr><td>Distance caractéristique de flamme</td><td id="cFlameDistance"></td><td>0,45 × alésage (hypothèse du modèle)</td></tr>
+<tr><td>Durée de combustion estimée</td><td id="cBurnDuration"></td><td>6 × N × distance / vitesse de flamme (° vilebrequin)</td></tr>
+<tr><td>Fin de combustion estimée</td><td id="cBurnEnd"></td><td>360° − AA + durée de combustion</td></tr>
+<tr><td>Pression au PMH après AA</td><td id="cPAtTDC"></td><td>P(360°) avec chaleur progressivement libérée</td></tr>
+<tr><td>Exposant de détente après combustion n</td><td id="cExpReal"></td><td>Polytrope simplifiée reliant la fin de combustion à la pression à AOE</td></tr>
+</tbody></table></div>
+<div class="modelNote">Dans le cycle idéal, P₂ vient de la compression adiabatique et P₃ découle de la chaleur Q<sub>in</sub> reçue par le gaz à volume constant au PMH. Un apport Q<sub>in</sub> faible engendre une faible différence P₃ − P₂ et peu de travail. La borne minimale de chaleur est un garde-fou pédagogique de visibilité. La même chaleur Q est également libérée dans le modèle réel, progressivement. Le cycle théorique suit le cycle d’Otto : compression adiabatique du PMB (P atmosphérique) au PMH (P₂), apport de chaleur isochore au PMH jusqu’à P₃, détente adiabatique jusqu’au PMB (P₄), puis retour à P atmosphérique à volume constant. Le cycle réel est une approximation pédagogique : la compression part de la pression au RFA et suit une loi simplifiée tenant compte du rapport des volumes V(RFA)/V(θ), de γ et du coefficient global d’atténuation k ; la masse d’air agit déjà sur P(RFA). La pression à AA est calculée à l’angle choisi par l’utilisateur. Une loi de Wiebe libère le Q commun aux deux cycles sur une durée déduite de la vitesse moyenne de flamme, de l’alésage et du régime. La pression maximale et son angle sont des résultats du calcul. Après la combustion, l’exposant de détente est ajusté pour atteindre la pression à AOE encore imposée. Les phases d'ouverture de soupapes et de pompage sont interpolées. L’inertie d’admission représente un gain de masse paramétré, non une modélisation du débit, de la vitesse ou des ondes de pression. Les pressions sur les courbes sont absolues.</div>
+</section>
+<div class="bottom">
+   <div class="legend"><span><i class="stroke red"></i>Projection du piston vers le volume</span><span><i class="stroke"></i>Courbe réelle</span><span><i class="stroke"></i>Courbe théorique</span><span><i class="stroke blue"></i>Admission</span><span><i class="stroke amber"></i>Échappement</span><span>Échelle verticale linéaire (automatique)</span></div>
+  </div>
+ </section>
+ <div class="footnote">La longueur horizontale représentant la course est agrandie de 25 % (échelle commune au piston, à la bielle et à la manivelle). Le volume reste aligné verticalement avec le piston. Modèle pédagogique simplifié de cycle d’Otto. Les événements de distribution et la courbe réelle sont illustratifs. Les pressions au PMB sont calculées : admission = moyenne entre P admission cylindre et P(RFA), échappement = moyenne de P(AOE) et de la contre-pression absolue. La pression au RFA provient par défaut de la masse gazeuse et de la température, avec un supplément estimatif par inertie ; elle reste réglable à la souris ; les autres points règlent les données de la courbe tout en conservant les points d'ancrage et l'alignement piston-volume. Alésage et course modifient la géométrie à une échelle de représentation commune ; pour préserver la lisibilité, le tracé P–V conserve l’alignement vertical piston-volume.</div>
+</div>
+<script>
+(()=>{
+'use strict';
+const NS='http://www.w3.org/2000/svg', $=id=>document.getElementById(id), rad=Math.PI/180;
+const CY=565, HEAD=335, P_TOP=55;
+let P_BOTTOM=560; // Vue « Original » : ancienne hauteur « Très compacte ». « Adapter à l’écran » calcule cette valeur selon l’écran.
+let ENGINE_Y=690; // Translation verticale recalculée selon l’alésage pour conserver les repères lisibles
+const factoryDefaults={bore:90,stroke:60,chamber:35,p0:1,heatInput:220,gamma:1.3,rodRatio:2.8,
+ aoa:15,rfa:30,aoe:40,rfe:16,pAtAA:4,compressionFactor:0.35,pAt180:0.94,pAt540:1.56,intakePointAngle:79.7,exhaustPointAngle:640.3,pAtRFA:1.00,pAtAOA:1.06,pAtRFE:0.95,pRealMax:10,aa:10,pRealAngle:10,flameSpeed:15,engineRPM:2500,pAtAOE:2,backPressure:0.12,manifoldPressure:0.95,volumetricEfficiency:90,manifoldTemp:20,cylinderTemp:30,inertiaGain:5,intakePressure:0.90};
+// Le piston atteint la moitié réelle de sa course à ~79,7° en admission
+// et ~640,3° en échappement avec L/R = 2,8 : l'angle de 90°/630°
+// ne correspond pas à la mi-course à cause de l'obliquité de la bielle.
+let defaults={...factoryDefaults};
+// La pression au PMH après allumage est désormais un point calculé par la combustion progressive.
+let defaultsCurve={combustionPressure:null,rfaManualOverride:false}; // Valeur historique de combustionPressure ignorée : PMH désormais calculé.
+let q={...defaults}, angle=0,mode='ideal',running=false,speed=1,lastTime=0,model=null;
+const green={combustion:{angle:360,pressure:null}};
+let activeHandle=null,dragOrigin=null;
+// Un réglage vertical du RFA remplace le calcul automatique jusqu’au retour explicite au calcul.
+let rfaManualOverride=false;
+const fmt=(v,d=1)=>Number(v).toLocaleString('fr-FR',{maximumFractionDigits:d});
+// Bornes pédagogiques : assurent une géométrie et des transformations compatibles.
+// Ne prétendent pas couvrir toutes les architectures de moteurs réels.
+// Les trois formes ne modifient que le rapport alésage/course.
+// Cylindrée unitaire et rapport volumétrique sont conservés à chaque sélection.
+const ENGINE_PRESETS={
+ supercarre:{ratio:1.5,label:'Supercarré'},
+ carre:{ratio:1,label:'Carré'},
+ longue:{ratio:0.7,label:'Longue course'}
+};
+const VISUAL_LEFT_SHIFT=65;
+function presetDimensions(engineKey,referenceVolume){
+ const ratio=ENGINE_PRESETS[engineKey].ratio;
+ // V[cm³] = pi * D²[mm] * C[mm] / 4000, D/C = ratio.
+ const bore=Math.cbrt(4000*referenceVolume*ratio/Math.PI);
+ const stroke=bore/ratio;
+ const inBounds=bore>=BASE_LIMITS.bore.min-1e-8&&bore<=BASE_LIMITS.bore.max+1e-8&&
+     stroke>=BASE_LIMITS.stroke.min-1e-8&&stroke<=BASE_LIMITS.stroke.max+1e-8;
+ return {bore,stroke,ratio,inBounds};
+}
+const EPS_MIN=6,EPS_MAX=13;
+// Les marges servent à une comparaison pédagogique des surfaces, pas à un calcul thermodynamique du cycle réel.
+// Le minimum conserve un écart P₃–P₂ visible, sans imposer une comparaison
+// des travaux entre deux modèles qui ne partagent pas le même apport d’énergie.
+const THEORETICAL_P3_ABOVE_P2=5;
+const BASE_LIMITS={};
+for(const k of Object.keys(factoryDefaults))BASE_LIMITS[k]={min:Number($(k).min),max:Number($(k).max)};
+function setBound(id,min,max){
+ const el=$(id);
+ if(min>max)min=max;
+ el.min=String(Math.round(min*10000)/10000);
+ el.max=String(Math.round(max*10000)/10000);
+}
+function normalizeParameters(origin='',announcements=false){
+ const changes=[];
+ // D'abord, bornes absolues : alésage, course, gamma, R/L, événements de distribution.
+ for(const [k,b] of Object.entries(BASE_LIMITS)){
+   if(k==='chamber'||k==='heatInput'||k==='pAtAA'||k==='pRealMax'||k==='pAtRFA'||k==='pAtAOE')continue;
+   q[k]=Math.min(b.max,Math.max(b.min,Number.isFinite(q[k])?q[k]:factoryDefaults[k]));
+ }
+ const cyl=swept();
+ // Arrondis aux pas des champs : une flèche du navigateur garde des valeurs valides.
+ const chMin=Math.ceil((Math.max(BASE_LIMITS.chamber.min,cyl/(EPS_MAX-1))-1e-9)*10)/10;
+ const chMax=Math.floor((Math.min(BASE_LIMITS.chamber.max,cyl/(EPS_MIN-1))+1e-9)*10)/10;
+ setBound('chamber',chMin,chMax);
+ const oldCh=q.chamber;
+ q.chamber=Math.min(chMax,Math.max(chMin,q.chamber));
+ if(Math.abs(oldCh-q.chamber)>1e-6)changes.push('volume de chambre corrigé pour ε entre 6 et 13');
+ // Masses idéales en kg, volumes en m³, pressions en Pa, températures en K.
+ // Un modèle incomplet de gaz résiduels est conservé et signalé comme hypothèse.
+ const mm=admissionMassModel();
+ q.intakePressure=mm.pAdmission;
+ setBound('pAtRFA',BASE_LIMITS.pAtRFA.min,BASE_LIMITS.pAtRFA.max);
+ if(!rfaManualOverride) q.pAtRFA=mm.pRFACalculated;
+ q.pAtRFA=clamp(Number.isFinite(q.pAtRFA)?q.pAtRFA:mm.pRFACalculated,
+   BASE_LIMITS.pAtRFA.min,BASE_LIMITS.pAtRFA.max);
+ $('pAtRFA').title=rfaManualOverride?'Pression RFA corrigée manuellement ; utiliser le bouton « Revenir au calcul » pour annuler':'Pression RFA calculée automatiquement ; peut être corrigée à la souris';
+ // La pression de compression à AA dépend de l’angle, du RFA, des volumes et de k.
+ // Pmax et sa position ne sont PLUS des entrées, et n'imposent donc aucune borne à k.
+ setBound('compressionFactor',BASE_LIMITS.compressionFactor.min,BASE_LIMITS.compressionFactor.max);
+ q.compressionFactor=clamp(Number.isFinite(q.compressionFactor)?q.compressionFactor:factoryDefaults.compressionFactor,
+    BASE_LIMITS.compressionFactor.min,BASE_LIMITS.compressionFactor.max);
+ q.pAtAA=compressionPressureAt(360-q.aa);
+ const blowMin=Math.max(BASE_LIMITS.pAtAOE.min,q.p0+q.backPressure+0.10);
+ setBound('pAtAOE',blowMin,BASE_LIMITS.pAtAOE.max);
+ q.pAtAOE=clamp(Number.isFinite(q.pAtAOE)?q.pAtAOE:factoryDefaults.pAtAOE,
+   blowMin,BASE_LIMITS.pAtAOE.max);
+ // Au PMB admission : moyenne de la pression cylindre au point de pompage et du RFA.
+ q.pAt180=(q.intakePressure+q.pAtRFA)/2;
+ // Au PMB échappement : moyenne entre la pression à AOE et la pression
+ // d'échappement absolue (P atmosphérique + surpression de contre-pression).
+ q.pAt540=(q.pAtAOE+q.p0+q.backPressure)/2;
+ // Aux transitions de distribution, moyenne de deux pressions absolues.
+ q.pAtAOA=q.p0+q.backPressure/2;
+ q.pAtRFE=(q.p0+q.intakePressure)/2;
+ $('pAt180').value=(Math.round(q.pAt180*1000)/1000).toString();
+ $('pAt540').value=(Math.round(q.pAt540*1000)/1000).toString();
+ $('pAtAOA').value=(Math.round(q.pAtAOA*1000)/1000).toString();
+ $('pAtRFE').value=(Math.round(q.pAtRFE*1000)/1000).toString();
+ // Chaleur théorique limitée à un apport aussi faible que possible tout en
+ // gardant une hauteur lisible pour l'isochore de combustion (P₃ − P₂ ≥ 5 bar).
+ // Aucune condition artificielle de rendement n'est imposée entre les deux modèles.
+ const P3_MAX=180;
+ const heatMax=Math.min(BASE_LIMITS.heatInput.max,heatForP3(P3_MAX));
+ const heatMin=Math.min(heatMax,Math.ceil(Math.max(BASE_LIMITS.heatInput.min,
+   heatForP3(p2()+THEORETICAL_P3_ABOVE_P2))));
+ setBound('heatInput',heatMin,heatMax);
+ const previousHeat=q.heatInput;
+ q.heatInput=Math.min(heatMax,Math.max(heatMin,Number.isFinite(q.heatInput)?q.heatInput:factoryDefaults.heatInput));
+ if(q.heatInput>previousHeat+1e-6)changes.push('chaleur théorique ajustée au minimum permettant de voir la combustion isochore');
+ // Recalculer les états de combustion après le bornage de Q (commun au cycle
+ // théorique et au modèle de chaleur libérée progressivement en réel).
+ model=buildModel();
+ q.pRealMax=model.peakPressure;
+ q.pRealAngle=model.peak-360;
+ updateGreenState();
+ // Toutes les commandes restent cohérentes avec l'état simulé, y compris après glisser-déposer.
+ for(const k of Object.keys(factoryDefaults)){
+   const el=$(k),value=q[k];
+   if(el!==document.activeElement || Math.abs(Number(el.value)-value)>0.00001)el.value=(Math.round(value*10000)/10000).toString();
+ }
+ $('coherenceBounds').innerHTML=`<strong>Bornes pédagogiques :</strong> ε = ${fmt(eps(),2)} (6 à 13) · chambre : ${fmt(chMin,1)}–${fmt(chMax,1)} cm³ · fin compression P₂ = ${fmt(p2(),1)} bar · chaleur Q<sub>in</sub> admissible : ${fmt(heatMin,0)}–${fmt(heatMax,0)} J · pression calculée P₃ = ${fmt(p3(),1)} bar (plafond 180 bar) · L/R : 2,2 à 4,5. Le minimum de chaleur préserve un écart P₃ − P₂ de 5 bar pour la lisibilité. Cycle réel : Pmax calculée = ${fmt(model.peakPressure,2)} bar à ${fmt(model.peak-360,1)}° après PMH ; durée de combustion ≈ ${fmt(model.burnDuration,1)}°. La vitesse de flamme reste une approximation.`;
+ const unitVolume=swept();
+ for(const btn of document.querySelectorAll('[data-engine]')){
+   const preset=presetDimensions(btn.dataset.engine,unitVolume);
+   btn.querySelector('small').textContent=`${fmt(preset.bore,1)} × ${fmt(preset.stroke,1)} mm`;
+   btn.disabled=!preset.inBounds;
+   btn.title=preset.inBounds?
+     `Cylindrée maintenue à ${fmt(unitVolume,1)} cm³ ; rapport volumétrique ${fmt(eps(),2)}:1`:
+     'Dimensions incompatibles avec les bornes actuelles d’alésage et de course.';
+   btn.setAttribute('aria-pressed',Math.abs(q.bore/q.stroke-preset.ratio)<0.015?'true':'false');
+ }
+ if(announcements)window.__paramMessages=changes;
+ return changes;
+}
+
+const USER_PRESET_KEY='moteur-otto-parametres-defaut-v1';
+function presetNotice(message){$('presetInfo').textContent=message;}
+// Les autres points déplaçables sont déjà représentés sans arrondi dans q :
+// angles de distribution, pressions aux PMB, AA, AOE, Pmax, pompage, etc.
+// Le point au PMH, lui, a un état indépendant qu'il faut conserver explicitement.
+function captureRealCurve(){
+ return {combustionPressure:null,rfaManualOverride};
+}
+function restoreRealCurve(state){
+ rfaManualOverride=Boolean(state?.rfaManualOverride);
+ normalizeParameters();
+ green.combustion.angle=360;
+ green.combustion.pressure=null; // Ignore toute ancienne pression de combustion fixée manuellement.
+ model=buildModel();
+ updateGreenState(); // vérification des bornes, sans réinitialiser la pression enregistrée
+}
+function applyParameterValues(params,manual=false){
+ rfaManualOverride=Boolean(manual);
+ for(const k of Object.keys(factoryDefaults)){
+  const value=Number(params[k]),b=BASE_LIMITS[k];
+  q[k]=Math.max(b.min,Math.min(b.max,Number.isFinite(value)?value:factoryDefaults[k]));
+ }
+ normalizeParameters();
+}
+function loadUserPreset(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(USER_PRESET_KEY)||'null');
+  if(!saved||typeof saved!=='object'||!saved.parameters)return;
+  const p={...factoryDefaults};
+  for(const k of Object.keys(factoryDefaults)){
+    // Un champ absent ne doit pas être interprété comme 0.
+    if(saved.parameters[k]===undefined||saved.parameters[k]===null)continue;
+    const n=Number(saved.parameters[k]);
+    if(Number.isFinite(n))p[k]=Math.min(BASE_LIMITS[k].max,Math.max(BASE_LIMITS[k].min,n));
+  }
+  // Anciennes versions : estimation de la pression de tubulure à partir
+  // de la perte de charge d’admission saisie (approximation de migration).
+  if(saved.parameters.manifoldPressure===undefined && Number.isFinite(Number(saved.parameters.intakeLoss)) && saved.parameters.intakeLoss!==null)
+    p.manifoldPressure=clamp(p.p0-Number(saved.parameters.intakeLoss),BASE_LIMITS.manifoldPressure.min,BASE_LIMITS.manifoldPressure.max);
+  // Compatibilité avec les précédentes versions : l'ancienne consigne de pression P₃
+  // est convertie en chaleur de combustion théorique, à partir de la géométrie sauvegardée.
+  if(saved.parameters.heatInput===undefined&&Number.isFinite(Number(saved.parameters.pComb))){
+    const oldP3=Number(saved.parameters.pComb);
+    const oldV=Math.PI*p.bore*p.bore*p.stroke/4000;
+    const oldP2=p.p0*Math.pow(1+oldV/p.chamber,p.gamma);
+    const converted=0.1*p.chamber*Math.max(0,oldP3-oldP2)/(p.gamma-1);
+    p.heatInput=Math.min(BASE_LIMITS.heatInput.max,Math.max(BASE_LIMITS.heatInput.min,converted));
+  }
+  defaults=p;
+  // Version 2 : sauvegarde du tracé complet ; compatibilité avec l'ancien champ.
+  const v2Pressure=saved.realCurve?.combustionPressure;
+  const oldPressure=saved.combustionPressure;
+  defaultsCurve={combustionPressure:
+    typeof v2Pressure==='number'&&Number.isFinite(v2Pressure)?v2Pressure:
+    typeof oldPressure==='number'&&Number.isFinite(oldPressure)?oldPressure:null,
+    rfaManualOverride:saved.realCurve?.rfaManualOverride ??
+      (saved.parameters.pAtRFA!==undefined && Math.abs(Number(saved.parameters.pAtRFA)-p.p0)>0.005)};
+  applyParameterValues(defaults,defaultsCurve.rfaManualOverride);
+  restoreRealCurve(defaultsCurve);
+  presetNotice('Tous les paramètres et la forme de la courbe réelle ont été restaurés.');
+ }catch(_error){
+  // In some browsers file:// pages cannot use storage; the simulator still runs.
+  presetNotice('Conservation automatique indisponible dans ce navigateur.');
+ }
+}
+
+function fromForm(event){const vals={};let messages=[];for(const k of Object.keys(factoryDefaults)){
+  const el=$(k),raw=Number(el.value),hard=BASE_LIMITS[k];
+  if(!Number.isFinite(raw)||el.value===''){messages.push('Valeur manquante : '+k); vals[k]=q[k];}
+  else {vals[k]=Math.min(hard.max,Math.max(hard.min,raw)); if(vals[k]!==raw) messages.push('Valeur limitée pour '+k);}
+ }q=vals;
+ if(event?.target?.id==='pAtRFA')rfaManualOverride=true;
+ const normalized=normalizeParameters(event?.target?.id||'',true);
+ window.__paramMessages=[...messages,...normalized];updateAll();}
+function leftFace(){return 360+2.5*q.chamber*1000/(Math.PI*q.bore*q.bore/4);}
+function swept(){return Math.PI*q.bore*q.bore*q.stroke/4000;} // mm³ vers cm³
+function eps(){return 1+swept()/q.chamber;}
+function crankRadius(){return 125*q.stroke/80;} // échelle horizontale du volume ×1,25
+function rodLength(){return q.rodRatio*crankRadius();}
+function crankCenter(){return leftFace()+crankRadius()+rodLength()+30;}
+function crank(t){const a=t*rad,R=crankRadius(),L=rodLength(),CX=crankCenter();const x=CX-R*Math.cos(a),y=CY-R*Math.sin(a),pin=x-Math.sqrt(L*L-R*R*Math.sin(a)**2);return {x,y,pin,face:pin-30};}
+function volume(t){return q.chamber+swept()*(crank(t).face-leftFace())/(2*crankRadius());}
+// Le rapport P_admission/P_atmosphère sert d'indice de remplissage *simplifié*.
+// Il ne représente pas le rendement volumétrique réel, lequel dépend aussi de
+// la température des gaz, du régime, des résiduels et de la dynamique d'admission.
+const AIR_GAS_R=287; // J/(kg·K), air sec, approximation pédagogique.
+function admissionMassModel(){
+ const Tm=q.manifoldTemp+273.15,Tc=q.cylinderTemp+273.15;
+ const density=q.manifoldPressure*1e5/(AIR_GAS_R*Tm); // kg/m³
+ const Vd=swept()*1e-6,Vc=q.chamber*1e-6;
+ const freshMass=(q.volumetricEfficiency/100)*density*Vd;
+ // Masse résiduelle : volume mort ramené fictivement à la densité tubulure.
+ // Ce n'est PAS une vraie estimation de l'état des gaz brûlés résiduels.
+ const residualMass=density*Vc;
+ const addedMass=freshMass*q.inertiaGain/100;
+ const totalRFA=freshMass+residualMass+addedMass;
+ const vMid=volume(q.intakePointAngle)*1e-6;
+ const admissionMass=residualMass+(q.volumetricEfficiency/100)*density*Math.max(0,vMid-Vc);
+ const pAdmission=admissionMass*AIR_GAS_R*Tc/vMid/1e5;
+ const vRFA=volume(180+q.rfa)*1e-6;
+ const pRFACalculated=totalRFA*AIR_GAS_R*Tc/vRFA/1e5;
+ return {density,freshMass,residualMass,addedMass,totalRFA,pAdmission,pRFACalculated,vMid,vRFA};
+}
+function fillIndex(){return q.volumetricEfficiency/100;}
+function efficiencyForIntakePressure(target,angle){
+ const Tm=q.manifoldTemp+273.15,Tc=q.cylinderTemp+273.15;
+ const Vc=q.chamber*1e-6,vm=volume(angle)*1e-6;
+ const pref=q.manifoldPressure*Tc/Tm;
+ return 100*(target/pref*vm-Vc)/Math.max(1e-9,vm-Vc);
+}
+function intakePressureAtEfficiency(angle,efficiencyPct){
+ const Tc=q.cylinderTemp+273.15,Tm=q.manifoldTemp+273.15;
+ const vm=volume(angle)*1e-6,Vc=q.chamber*1e-6;
+ return q.manifoldPressure*(Tc/Tm)*(Vc+efficiencyPct/100*Math.max(0,vm-Vc))/vm;
+}
+function compressionPressureGain(t){
+ const vRFA=volume(180+q.rfa), vCurrent=volume(t);
+ return q.pAtRFA*(Math.pow(vRFA/vCurrent,q.gamma)-1);
+}
+function compressionPressureAt(t){
+ return q.pAtRFA + q.compressionFactor*compressionPressureGain(t);
+}
+function p2(){return q.p0*Math.pow(eps(),q.gamma);}
+function p3(){return p2()+q.heatInput*(q.gamma-1)/(0.1*q.chamber);}
+function p4(){return p3()/Math.pow(eps(),q.gamma);}
+// Unités : 1 bar × 1 cm³ = 0,1 J. On calcule le travail net par ∮ P dV.
+function ottoEta(){return 1-Math.pow(eps(),1-q.gamma);}
+function idealHeatJ(){return q.heatInput;}
+function heatForP3(targetP3){return 0.1*q.chamber*Math.max(0,targetP3-p2())/(q.gamma-1);}
+function workIdealJ(){return idealHeatJ()*ottoEta();}
+function pressure3ForIdealWork(targetJ){
+ const denom=0.1*q.chamber*ottoEta();
+ return p2()+targetJ*(q.gamma-1)/Math.max(1e-9,denom);
+}
+function workRealJ(){
+ if(!model)return 0;
+ let work=0,prevVol=volume(0),prevP=realPressure(0);
+ for(let i=1;i<=1440;i++){
+   const t=i*0.5,v=volume(t),p=realPressure(t);
+   if(Number.isFinite(v)&&Number.isFinite(p)&&Number.isFinite(prevP))
+     work+=0.05*(p+prevP)*(v-prevVol); // 0,1 × (p+p_old)/2
+   prevVol=v;prevP=p;
+ }
+ return work;
+}
+// The pressure-axis scale remains LINEAR; it can auto-fit the visible curves.
+function yMax(){const realTop=Math.max(q.pRealMax,q.pAtAOE,model?.pBefore??0,q.p0+q.backPressure);
+ const theoTop=Math.max(p2(),p3());
+ const high=mode==='real'?realTop:mode==='ideal'?theoTop:Math.max(realTop,theoTop);
+ return Math.max(5,high*1.12);}
+function plotY(p){return P_BOTTOM-p/yMax()*(P_BOTTOM-P_TOP);}
+const smooth=t=>{t=Math.min(1,Math.max(0,t));return t*t*(3-2*t);};
+const between=(t,a,b,pA,pB)=>pA+(pB-pA)*smooth((t-a)/(b-a));
+// Cubique d'Hermite : interpolation lisse passant exactement par ses points imposés.
+function hermite(t,a,pa,ma,b,pb,mb){if(b<=a+0.001)return pb;const d=b-a,u=Math.max(0,Math.min(1,(t-a)/d)),u2=u*u,u3=u2*u;return (2*u3-3*u2+1)*pa+(u3-2*u2+u)*d*ma+(-2*u3+3*u2)*pb+(u3-u2)*d*mb;}
+function safeSlope(a,b){return (b-a)||0;}
+function boundedSlope(s1,s2){return s1*s2>0?2*s1*s2/(s1+s2):0;}
+const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+// Les points restent sur leur portion de cycle, conformément à la cinématique piston-vilebrequin.
+function greenBounds(which){
+ const r=model,pLo=Math.min(r.pBefore,q.pRealMax)+0.025;
+ return {lo:360,hi:360,pLo,pHi:Math.max(pLo,q.pRealMax-0.025)};
+}
+function updateGreenState(_reset=false){
+ // Le point au PMH est désormais entièrement déterminé par le calcul thermodynamique.
+ green.combustion.angle=360;
+ green.combustion.pressure=model?realPressure(360):null;
+}
+
+const quadThrough=(t,x1,y1,x2,y2,x3,y3)=>{const d12=(x1-x2)||1e-9,d13=(x1-x3)||1e-9,d21=(x2-x1)||1e-9,d23=(x2-x3)||1e-9,d31=(x3-x1)||1e-9,d32=(x3-x2)||1e-9;return y1*((t-x2)*(t-x3)/(d12*d13))+y2*((t-x1)*(t-x3)/(d21*d23))+y3*((t-x1)*(t-x2)/(d31*d32));};
+// Cycle d'Otto idéal :
+// 180° PMB  : début compression à P atmosphérique ;
+// 360° PMH  : fin compression à P₂, puis apport de chaleur isochore P₂→P₃ ;
+// 540° PMB  : fin détente adiabatique à P₄, puis chute isochore vers P atmosphérique.
+// À 360°, l'état affiché est P₃ (après combustion). À 540°, l'état affiché est
+// P₄ (avant la chute isochore) : les deux extrémités sont indiquées sur le P–V.
+function idealPressure(t){
+ const v=volume(t),vmin=q.chamber,vmax=q.chamber+swept();
+ if(t<=180)return q.p0;
+ if(t<360)return q.p0*Math.pow(vmax/v,q.gamma);
+ if(t<=540)return p3()*Math.pow(vmin/v,q.gamma);
+ return q.p0;
+}
+// Angles de distribution dans un cycle de 720°.
+function eventAngles(){return {aoa:720-q.aoa,rfa:180+q.rfa,aoe:540-q.aoe,rfe:q.rfe};}
+function flameDurationDegrees(ignition,aoe){
+ // Simplification assumée : la flamme parcourt 45 % de l'alésage à vitesse moyenne fixe.
+ // 1 tour / min = 6 degrés de vilebrequin / seconde.
+ const lengthM=0.45*q.bore/1000;
+ const requested=6*q.engineRPM*lengthM/q.flameSpeed;
+ // La combustion doit se terminer avant l'ouverture de l'échappement.
+ // Si les réglages rendent cela impossible, la durée effective est limitée et signalée.
+ const maximum=Math.max(2,aoe-ignition-3);
+ return {lengthM,requested,effective:Math.min(requested,maximum),truncated:requested>maximum};
+}
+function burnFraction(theta,start,duration){
+ const z=clamp((theta-start)/Math.max(duration,1e-8),0,1);
+ // Wiebe, exposant 3 et a=5. Normalisation pour Xb=1 à la fin de combustion.
+ const a=5;
+ return (1-Math.exp(-a*z*z*z))/(1-Math.exp(-a));
+}
+function simulateCombustion(ignitionAngle,aoe,initialPressure){
+ const duration=flameDurationDegrees(ignitionAngle,aoe);
+ const end=ignitionAngle+duration.effective;
+ const rfaVolume=volume(180+q.rfa),aaVolume=volume(ignitionAngle);
+ const nFromCompression=Math.log(Math.max(1e-7,initialPressure/q.pAtRFA))/Math.log(rfaVolume/aaVolume);
+ // Un exposant effectif positif restitue l'effet d'expansion des gaz chauffés
+ // tout en conservant l'atténuation pédagogique k pendant la compression.
+ const nDuringBurn=clamp(Number.isFinite(nFromCompression)?nFromCompression:1,0.85,q.gamma);
+ const step=0.25;
+ const points=[{angle:ignitionAngle,pressure:initialPressure}];
+ let theta=ignitionAngle,p=initialPressure;
+ while(theta<end-1e-9){
+   const next=Math.min(end,theta+step),v0=volume(theta),v1=volume(next);
+   const deltaX=burnFraction(next,ignitionAngle,duration.effective)-burnFraction(theta,ignitionAngle,duration.effective);
+   const deltaQ=q.heatInput*deltaX; // Même Q apportée au gaz que dans le cycle théorique.
+   p=p*Math.pow(v0/v1,nDuringBurn)+(q.gamma-1)*deltaQ/(0.1*v1);
+   points.push({angle:next,pressure:p});
+   theta=next;
+ }
+ const endPressure=p,endVolume=volume(end),aoeVolume=volume(aoe);
+ // Après la libération de Q, la détente reste ajustée à P(AOE) : on évite
+ // d'introduire un deuxième modèle de pertes thermiques non paramétré.
+ const denom=Math.log(aoeVolume/endVolume);
+ const nExpansion=denom>0.01?Math.log(endPressure/q.pAtAOE)/denom:nDuringBurn;
+ function combustionPressure(t){
+   if(t<=ignitionAngle)return initialPressure;
+   if(t>=end)return endPressure;
+   const i=Math.min(points.length-2,Math.max(0,Math.floor((t-ignitionAngle)/step)));
+   const a=points[i],b=points[i+1];
+   return a.pressure+(b.pressure-a.pressure)*(t-a.angle)/(b.angle-a.angle);
+ }
+ function pressureAt(t){
+   if(t<=end)return combustionPressure(t);
+   return endPressure*Math.pow(endVolume/volume(t),nExpansion);
+ }
+ let peak=ignitionAngle,peakPressure=initialPressure;
+ for(let t=ignitionAngle;t<=aoe+0.0001;t+=0.25){
+   const v=pressureAt(Math.min(t,aoe));
+   if(v>peakPressure){peakPressure=v;peak=Math.min(t,aoe);}
+ }
+ // Inclure les bornes, notamment le PMH ou la fin de combustion.
+ for(const t of [end,360,aoe]){
+   if(t<ignitionAngle||t>aoe)continue;
+   const v=pressureAt(t);
+   if(v>peakPressure){peakPressure=v;peak=t;}
+ }
+ return {burnDuration:duration.effective,burnDurationRequested:duration.requested,burnTruncated:duration.truncated,
+   flameDistance:duration.lengthM,burnEnd:end,burnPoints:points,nDuringBurn,nExpansion,
+   burnEndPressure:endPressure,peak,peakPressure,pressureAt};
+}
+function buildModel(){const ev=eventAngles();
+ const admissionMid=clamp(q.intakePointAngle,Math.max(36,ev.rfe+1),179);
+ const exhaustMid=clamp(q.exhaustPointAngle,541,Math.min(690,ev.aoa-1));
+ const pAdmission=q.intakePressure,pExhaust=q.p0+q.backPressure;
+ const pRFA=q.pAtRFA,vRFA=volume(ev.rfa);
+ const ignitionAngle=360-q.aa;
+ const vAA=volume(ignitionAngle),pBefore=compressionPressureAt(ignitionAngle);
+ const nCompression=Math.log(pBefore/pRFA)/Math.log(vRFA/vAA);
+ const combustion=simulateCombustion(ignitionAngle,ev.aoe,pBefore);
+ const vPeak=volume(combustion.peak),vAOE=volume(ev.aoe);
+ const pAt720=q.p0+0.15*q.backPressure;
+ return {...ev,admissionMid,exhaustMid,pAdmission,pExhaust,pRFA,vRFA,ignitionAngle,pBefore,vAA,nCompression,vPeak,vAOE,
+   ...combustion,pAt720,pAtRFE:q.pAtRFE,pAt180:q.pAt180,pAt540:q.pAt540,pAtAOA:q.pAtAOA};
+}
+// Modèle réel semi-empirique : courbe continue, points caractéristiques contrôlables.
+// Compression : pression dérivée de V_RFA/V(theta), gamma, indice de remplissage et k.
+// Détente : courbe polytropique passant exactement par Pmax(angle max) et P(AOE).
+// Échanges gazeux : interpolation lisse à travers les pressions de mi-course.
+function realPressure(t){const r=model;
+ if(r.rfe>0&&t<=r.rfe)return between(t,0,r.rfe,r.pAt720,r.pAtRFE);
+ if(t<=r.admissionMid)return between(t,r.rfe,r.admissionMid,r.pAtRFE,r.pAdmission);
+ // Pression de pompage puis interpolation au PMB, et RFA calculée par la masse (ou corrigée à la souris).
+ // Si RFA=0°, PMB et RFA coïncident : transition directe pour éviter la division par zéro.
+ if(t<=r.rfa){
+   if(r.rfa<=180.01)return between(t,r.admissionMid,180,r.pAdmission,r.pRFA);
+   if(t<=180)return between(t,r.admissionMid,180,r.pAdmission,r.pAt180);
+   return hermite(t,180,r.pAt180,0,r.rfa,r.pRFA,0);
+ }
+ if(t<=r.ignitionAngle)return compressionPressureAt(t);
+ if(t<=r.aoe)return r.pressureAt(t); // Apport de Q progressif puis détente jusqu'à AOE.
+ // AOE = 0° : ouverture exactement au PMB (540°). Il n'y a alors plus
+ // d'intervalle entre AOE et PMB : ne pas interpoler avec deux abscisses
+ // identiques. La chute de pression est représentée au PMB, à volume constant.
+ if(t<=r.exhaustMid){
+   if(r.aoe>=540-0.001)return between(t,540,r.exhaustMid,r.pAt540,r.pExhaust);
+   if(r.aoe>539)return t<=540?between(t,r.aoe,540,q.pAtAOE,r.pAt540):between(t,540,r.exhaustMid,r.pAt540,r.pExhaust);
+   return quadThrough(t,r.aoe,q.pAtAOE,540,r.pAt540,r.exhaustMid,r.pExhaust);
+ }
+ if(t<=r.aoa)return between(t,r.exhaustMid,r.aoa,r.pExhaust,r.pAtAOA);
+ return between(t,r.aoa,720,r.pAtAOA,r.pAt720);}
+function lift(t,kind){const c=cams[kind],d=((t-c.mid+360)%720+720)%720-360,u=Math.abs(d)/c.half;return u>=1?0:Math.cos(u*Math.PI/2)**2;}
+function svg(tag,attrs={},par){let el=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);if(par)par.append(el);return el;}
+function tnode(par,x,y,txt,attrs={}){let el=svg('text',{x,y,'font-size':12,fill:'#435868',...attrs},par);el.textContent=txt;return el;}
+// Une seule abscisse P–V pour TOUS les cycles : face réelle du piston.
+// La courbe théorique est donc construite à partir des mêmes angles et de la même
+// cinématique bielle-manivelle que la courbe réelle, sans deuxième échelle en volume.
+function plotX(t){return crank(t).face;}
+function path(f,start,end){let out='';for(let t=start;t<=end+1e-5;t+=1){out+=(t===start?'M':'L')+plotX(t).toFixed(3)+' '+plotY(f(t)).toFixed(3)+' ';}return out;}
+function ottoAdiabatPath(angleStart,angleEnd,pStart,vStart){
+ let d='';const N=360;
+ for(let i=0;i<=N;i++){
+   const a=angleStart+(angleEnd-angleStart)*i/N;
+   const v=volume(a); // exactement la même grandeur que dans le cycle réel
+   const p=pStart*Math.pow(vStart/v,q.gamma); // PV^gamma = constante
+   d+=(i?'L':'M')+plotX(a).toFixed(3)+' '+plotY(p).toFixed(3)+' ';
+ }
+ return d;
+}
+
+const actual=svg('path',{fill:'none',stroke:'#375768','stroke-width':1.2,'stroke-linejoin':'round',opacity:.33},$('pvPaths'));
+const idealGroup=svg('g',{},$('pvPaths'));
+// Sur le P–V, chaque transformation du cycle réel reçoit la couleur de sa phase.
+// On colorie la TRAJECTOIRE, pas l'abscisse : le même volume est parcouru plusieurs fois.
+const realPhaseSegments=svg('g',{id:'realPhaseSegments','pointer-events':'none'},$('pvPaths'));
+const cycleColors={
+ admission:'#2e8fc6',compression:'#0c5ea8',combustion:'#d52a29',
+ detente:'#df6f9d',echappement:'#c47b28'
+};
+function drawRealPhaseSegments(){
+ realPhaseSegments.replaceChildren();
+ const stages=[
+  {from:0,to:180,color:cycleColors.admission},
+  {from:180,to:Math.max(180,Math.min(model.rfa,model.ignitionAngle)),color:'#2e8fc6'},
+  {from:Math.max(180,Math.min(model.rfa,model.ignitionAngle)),to:model.ignitionAngle,color:cycleColors.compression},
+  {from:model.ignitionAngle,to:model.burnEnd,color:cycleColors.combustion},
+  {from:model.burnEnd,to:model.aoe,color:cycleColors.detente},
+  {from:model.aoe,to:720,color:cycleColors.echappement}
+ ];
+ for(const stage of stages){
+   if(stage.to<=stage.from+1e-6)continue;
+   const count=Math.max(2,Math.ceil((stage.to-stage.from)/1));
+   const points=[];
+   for(let i=0;i<=count;i++){
+     const a=stage.from+(stage.to-stage.from)*i/count;
+     points.push(`${i?'L':'M'}${plotX(a).toFixed(3)} ${plotY(realPressure(a)).toFixed(3)}`);
+   }
+   svg('path',{d:points.join(' '),fill:'none',stroke:stage.color,
+     'stroke-width':3.4,'stroke-linejoin':'round','stroke-linecap':'round'},realPhaseSegments);
+ }
+}
+const cams={}, valves={};
+// Les groupes restent stables pendant un glisser-déposer pour conserver la capture du pointeur.
+const handleSVG={};
+const handleMeta={
+ aoa:{label:'AOA ouverture admission (pression calculée)',color:'#435868'},
+ rfa:{label:'RFA fermeture admission',color:'#435868'},
+ rfe:{label:'RFE fermeture échappement (pression calculée)',color:'#435868'},
+ aa:{label:'AA — avance réglable, pression calculée',color:'#435868'},
+ pmax:{label:'Pression combustion maximale réelle (calculée)',color:'#435868'},
+ aoe:{label:'AOE / fin détente',color:'#435868'},
+ intake:{label:'Pression admission cylindre (modifier le taux de remplissage)',color:'#435868'},
+ exhaust:{label:'Contre-pression échappement',color:'#435868'},
+ pmbAdmission:{label:'PMB admission 180 degrés (moyenne des pressions admission cylindre et RFA)',color:'#1c965b'},
+ pmbExhaust:{label:'Échappement au PMB 540 degrés (moyenne calculée)',color:'#1c965b'},
+ combustion:{label:'Pression calculée au PMH après allumage',color:'#1c965b'}
+};
+for(const [key,meta] of Object.entries(handleMeta)){
+ const g=svg('g',{'class':'green-knob','data-key':key,'tabindex':0,'role':'slider','aria-label':meta.label},$('greenHandles'));
+ // Zone de saisie invisible mais confortable ; le seul signe visible reste un petit cercle sur la courbe.
+ svg('circle',{cx:0,cy:0,r:(key==='intake'||key==='exhaust'?6.5:11),fill:'transparent',stroke:'none','pointer-events':'all'},g);
+ svg('circle',{cx:0,cy:0,r:2.8,fill:'#111',opacity:0.98,stroke:'none','pointer-events':'none'},g);
+ const title=svg('title',{},g);title.textContent=meta.label+(['aoa','rfe','aa'].includes(key)?' : déplacement horizontal uniquement':' : déplacer à la souris');
+ if(key==='pmbExhaust'||key==='pmbAdmission'||key==='pmax'||key==='combustion'){
+   g.removeAttribute('tabindex');g.removeAttribute('role');
+   g.classList.remove('green-knob');
+   g.style.pointerEvents='none';
+   // Le cercle de prise transparent doit AUSSI ignorer le pointeur :
+   // sinon il masque le point RFA voisin quand les pressions se rapprochent.
+   g.querySelector('circle').setAttribute('pointer-events','none');
+   title.textContent=meta.label+' : point calculé automatiquement';
+ }
+ handleSVG[key]=g;
+}
+function handlePos(key){
+ switch(key){
+  case 'aoa': return {angle:model.aoa,pressure:q.pAtAOA,visible:true};
+  case 'rfa': return {angle:model.rfa,pressure:q.pAtRFA,visible:true};
+  case 'rfe': return {angle:model.rfe,pressure:q.pAtRFE,visible:true};
+  case 'aa': return {angle:model.ignitionAngle,pressure:q.pAtAA,visible:true};
+  case 'pmax': return {angle:model.peak,pressure:q.pRealMax,visible:true};
+  case 'aoe': return {angle:model.aoe,pressure:q.pAtAOE,visible:true};
+  case 'intake': return {angle:model.admissionMid,pressure:model.pAdmission,visible:true};
+  case 'exhaust': return {angle:model.exhaustMid,pressure:model.pExhaust,visible:true};
+  case 'pmbAdmission': return {angle:180,pressure:q.pAt180,visible:true};
+  case 'pmbExhaust': return {angle:540,pressure:q.pAt540,visible:true};
+  case 'combustion': return {angle:360,pressure:realPressure(360),visible:mode!=='ideal' && model.ignitionAngle<359.7};
+ }
+}
+function renderHandles(){
+ for(const key of Object.keys(handleMeta)){
+   const pos=handlePos(key),g=handleSVG[key];
+   g.setAttribute('transform',`translate(${crank(pos.angle).face} ${plotY(pos.pressure)})`);
+   g.setAttribute('aria-valuenow',fmt(pos.pressure,2));
+   g.setAttribute('aria-valuetext',`${fmt(pos.pressure,2)} bar absolus à ${fmt(pos.angle,1)} degrés vilebrequin`);
+   g.style.display=mode==='ideal' || pos.visible===false ? 'none' : '';
+ }
+ $('greenReadouts').textContent=`PMB admission : ${fmt(q.pAt180,2)} bar · PMB échappement : ${fmt(q.pAt540,2)} bar · Admission : ${fmt(model.admissionMid,0)}° · Échappement : ${fmt(model.exhaustMid,0)}°`;  
+}
+function handleBounds(key){
+ switch(key){
+  case 'aoa': return {lo:720-(+$('aoa').max),hi:720-(+$('aoa').min),pLo:q.pAtAOA,pHi:q.pAtAOA};
+  case 'rfa': return {lo:180+(+$('rfa').min),hi:180+(+$('rfa').max),pLo:+$('pAtRFA').min,pHi:+$('pAtRFA').max};
+  case 'rfe': return {lo:+$('rfe').min,hi:+$('rfe').max,pLo:q.pAtRFE,pHi:q.pAtRFE};
+  case 'intake': return {lo:Math.max(36,model.rfe+1),hi:170,pLo:intakePressureAtEfficiency(model.admissionMid,+$('volumetricEfficiency').min),pHi:intakePressureAtEfficiency(model.admissionMid,+$('volumetricEfficiency').max)};
+  case 'exhaust': return {lo:560,hi:Math.min(690,model.aoa-1),pLo:q.p0+(+$('backPressure').min),pHi:q.p0+(+$('backPressure').max)};
+  case 'aa': return {lo:360-(+$('aa').max),hi:360-(+$('aa').min),pLo:q.pAtAA,pHi:q.pAtAA};
+  case 'pmax': return {lo:model.peak,hi:model.peak,pLo:model.peakPressure,pHi:model.peakPressure};
+  case 'aoe': return {lo:540-(+$('aoe').max),hi:540-(+$('aoe').min),pLo:+$('pAtAOE').min,pHi:+$('pAtAOE').max};
+  case 'pmbAdmission': return {x:false,pLo:+$('pAt180').min,pHi:+$('pAt180').max};
+  case 'pmbExhaust': return {x:false,pLo:+$('pAt540').min,pHi:+$('pAt540').max};
+  case 'combustion': return greenBounds('combustion');
+ }
+}
+function syncInputs(keys){ for(const k of keys){ if($(k)) $(k).value=(Math.round(q[k]*100)/100).toString(); } }
+function faceToAngle(x,lo,hi){ let best=lo,bestErr=1e9; for(let t=lo;t<=hi+1e-9;t+=0.25){ const e=Math.abs(crank(t).face-x); if(e<bestErr){bestErr=e;best=t;} }
+ let a=Math.max(lo,best-0.5),b=Math.min(hi,best+0.5); for(let i=0;i<15;i++){ const m1=a+(b-a)/3,m2=b-(b-a)/3,e1=Math.abs(crank(m1).face-x),e2=Math.abs(crank(m2).face-x); if(e1<e2)b=m2; else a=m1; }
+ return (a+b)/2; }
+function pointerScene(ev){
+ const scene=$('scene'),matrix=scene.getScreenCTM();
+ if(!matrix) return null;
+ const pt=scene.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;
+ return pt.matrixTransform(matrix.inverse());
+}
+function dragHandle(ev,key){
+ const s=pointerScene(ev);if(!s||!dragOrigin)return;
+ const bounds=handleBounds(key);
+ // Relative movement prevents input jumps and circular scale feedback as yMax changes.
+ const deltaY=s.y-dragOrigin.y;
+ const p=clamp(dragOrigin.pressure-deltaY*dragOrigin.pScale/(P_BOTTOM-P_TOP),bounds.pLo,bounds.pHi);
+ const deltaX=s.x-dragOrigin.x;
+ if(key==='aoa'){
+   q.aoa=clamp(dragOrigin.parameters.aoa + 0.33*deltaX,+$('aoa').min,+$('aoa').max);
+   syncInputs(['aoa']);
+ }else if(key==='rfa'){
+   q.rfa=clamp(dragOrigin.parameters.rfa + 0.33*deltaX,+$('rfa').min,+$('rfa').max);
+   if(Math.abs(deltaY)>0.5) {rfaManualOverride=true;q.pAtRFA=p;}
+   syncInputs(['rfa','pAtRFA']);
+ }else if(key==='rfe'){
+   q.rfe=clamp(dragOrigin.parameters.rfe + 0.33*deltaX,+$('rfe').min,+$('rfe').max);
+   syncInputs(['rfe']);
+ }else if(key==='intake'){
+   q.intakePointAngle=clamp(dragOrigin.parameters.intakePointAngle+0.34*deltaX,bounds.lo,bounds.hi);
+   if(Math.abs(deltaY)>0.5) q.volumetricEfficiency=clamp(efficiencyForIntakePressure(p,q.intakePointAngle),+$('volumetricEfficiency').min,+$('volumetricEfficiency').max);
+   syncInputs(['volumetricEfficiency','intakePointAngle']);
+ }else if(key==='exhaust'){
+   q.backPressure=clamp(p-q.p0,+$('backPressure').min,+$('backPressure').max);
+   q.exhaustPointAngle=clamp(dragOrigin.parameters.exhaustPointAngle+0.34*deltaX,bounds.lo,bounds.hi);
+   syncInputs(['backPressure','exhaustPointAngle']);
+ }else if(key==='aa'){
+   // Stronger angular sensitivity near PMH, where volume barely changes.
+   q.aa=clamp(dragOrigin.parameters.aa + 0.28*deltaX,+$('aa').min,+$('aa').max);
+   // Le déplacement vertical de l’AA est volontairement ignoré.
+   syncInputs(['aa']);
+ }else if(key==='pmax'){
+   return; // Valeur et angle déduits du calcul de combustion.
+ }else if(key==='aoe'){
+   q.aoe=clamp(dragOrigin.parameters.aoe - 0.28*deltaX,+$('aoe').min,+$('aoe').max);
+   q.pAtAOE=p;syncInputs(['aoe','pAtAOE']);
+ }else if(key==='pmbAdmission'){
+   // Point dérivé des pressions admission cylindre et RFA : déplacement interdit.
+   return;
+ }else if(key==='pmbExhaust'){
+   // Point calculé : aucun déplacement manuel.
+   return;
+ }else if(key==='combustion'){
+   return; // Pression PMH calculée par la chaleur progressive.
+ }
+ updateAll(false);
+}
+
+for(const c of [{id:'admission',name:'ADMISSION',x:197,y:525,color:'#1677a6',mid:99,half:111},{id:'echappement',name:'ÉCHAPPEMENT',x:197,y:606,color:'#c47b28',mid:616,half:116}]){
+ let g=svg('g',{},$('cams')),shape=svg('path',{fill:'#e1e8ec',stroke:'#354854','stroke-width':2.5,'stroke-linejoin':'round','stroke-linecap':'round'},g);
+ svg('circle',{cx:c.x,cy:c.y,r:6,fill:'#fff',stroke:'#354854','stroke-width':2},g);
+ const labelX=c.x;
+ const labelY=c.id==='echappement'?c.y+54:c.y-54;
+ tnode(g,labelX,labelY,c.name,{'text-anchor':'middle','font-size':13,'font-weight':800,fill:c.color});
+ let follower=svg('rect',{x:c.x+27,y:c.y-7,width:8,height:14,rx:2,fill:'#a7b6c0',stroke:'#405865'},g);
+ let stem=svg('line',{x1:c.x+33,y1:c.y,x2:330,y2:c.y,stroke:c.color,'stroke-width':5},g);
+ cams[c.id]={...c,shape,follower,stem};
+ let vg=svg('g',{},$('valveShapes'));
+ valves[c.id]={head:svg('line',{x1:339,y1:c.y-14,x2:339,y2:c.y+14,stroke:c.color,'stroke-width':9,'stroke-linecap':'round'},vg),stem:svg('line',{x1:321,y1:c.y,x2:339,y2:c.y,stroke:c.color,'stroke-width':5},vg)};
+}
+// Angles réels des cinq événements sur le tour géométrique du vilebrequin.
+// AA est sur un cercle intérieur pour rester distinct d'AOA, tout près du PMH.
+function timingMarks(){return [
+ {key:'aoa',a:720-q.aoa,label:'AOA',color:'#1677a6'},
+ {key:'rfa',a:180+q.rfa,label:'RFA',color:'#1677a6'},
+ {key:'aoe',a:540-q.aoe,label:'AOE',color:'#c47b28'},
+ {key:'rfe',a:q.rfe,label:'RFE',color:'#c47b28'},
+ {key:'aa',a:360-q.aa,label:'AA',color:'#bc4d59'}
+];}
+const wrapAngle180=a=>((a+540)%360+360)%360-180;
+function updateTimingKeyFromPointer(key,ev){
+ const p=pointerScene(ev);if(!p)return;
+ // Le groupe intégré est translaté horizontalement par la géométrie du moteur,
+ // et verticalement avec le bloc moteur (ENGINE_Y unités SVG).
+ const a=((Math.atan2(CY+ENGINE_Y-p.y,crankCenter()-p.x)/rad)%360+360)%360;
+ const fromPMH=wrapAngle180(a),fromPMB=wrapAngle180(a-180);
+ const value={aoa:-fromPMH,rfa:fromPMB,aoe:-fromPMB,rfe:fromPMH,aa:-fromPMH}[key];
+ const input=$(key);
+ if(!input||!Number.isFinite(value))return;
+ q[key]=Math.round(clamp(value,+input.min,+input.max)*10)/10;
+ updateAll(false);
+}
+function updateRotationArrow(){
+ const r=crankRadius()+62,pts=[];
+ // Flèche horaire décalée davantage vers la droite du repère PMB, avec un arc très court.
+ for(let a=158;a<=188;a+=2){const th=a*rad;pts.push(`${pts.length?'L':'M'}${(885-r*Math.cos(th)).toFixed(2)} ${(CY-r*Math.sin(th)).toFixed(2)}`);}
+ const d=pts.join(' ');
+ for(const arcId of ['rotationArc','rotationArcAlways']){ const el=$(arcId); if(el) el.setAttribute('d',d); }
+ // Le texte explicatif n'est plus nécessaire : on le vide et on l'écarte discrètement.
+ for(const hintId of ['rotationHint','rotationHintAlways']){
+   const el=$(hintId); if(!el) continue;
+   el.textContent='';
+   el.setAttribute('x',885+r+10);
+   el.setAttribute('y',CY+crankRadius()*0.94);
+ }
+}
+function drawTimingMarks(){
+ const parent=$('timingMarks'),selected=document.activeElement?.getAttribute?.('data-timing-key');
+ parent.replaceChildren();
+ const marks=timingMarks();
+ const byKey=Object.fromEntries(marks.map(m=>[m.key,m]));
+ // Transposition de l'épure conventionnelle (PMH en haut) au montage horizontal :
+ // rotation de 90° antihoraire ; PMH à gauche, PMB à droite, sans déplacer l'axe du vilebrequin.
+ // Deux demi-cercles plus petits et plus proches du vilebrequin,
+ // pour rester visuellement sous le trajet du maneton.
+ // Échappement légèrement plus petit ; écart de 17 unités entre les deux arcs (contre 12).
+ const rEchappement=Math.max(36,crankRadius()-18);
+ const rAdmission=Math.max(28,rEchappement-17);
+ // La position d'AA n'est pas modifiée par ces retouches des deux arcs.
+ const rAllumage=Math.max(24,crankRadius()-44);
+ const pointAt=(a,r)=>{const th=a*rad;return {x:885-r*Math.cos(th),y:CY-r*Math.sin(th)};};
+ // Les angles positifs suivent exactement le vilebrequin (gauche -> haut -> droite -> bas).
+ // Un échantillonnage de l'arc sur 720° évite toute ambiguïté au franchissement de 0° / 360°.
+ const valveOpeningArc=(start,end,r)=>{
+   const parts=[];
+   const count=Math.max(60,Math.ceil((end-start)/1.8));
+   for(let i=0;i<=count;i++){
+     const pos=pointAt(start+(end-start)*i/count,r);
+     parts.push(`${i?'L':'M'}${pos.x.toFixed(3)} ${pos.y.toFixed(3)}`);
+   }
+   return parts.join(' ');
+ };
+ // Admission : AOA (avant PMH) -> PMH à gauche -> sommet -> PMB à droite -> RFA.
+ // Échappement : AOE -> PMB à droite -> bas du cercle -> PMH à gauche -> RFE.
+ const blueStart=720-q.aoa, blueEnd=900+q.rfa;
+ const orangeStart=540-q.aoe, orangeEnd=720+q.rfe;
+ svg('path',{d:valveOpeningArc(blueStart,blueEnd,rAdmission),stroke:'#1677a6','stroke-width':4.5,
+   fill:'none','stroke-linecap':'round','stroke-linejoin':'round',opacity:.97,
+   'pointer-events':'none','aria-label':'Durée ouverture admission'},parent);
+ svg('path',{d:valveOpeningArc(orangeStart,orangeEnd,rEchappement),stroke:'#c47b28','stroke-width':4.5,
+   fill:'none','stroke-linecap':'round','stroke-linejoin':'round',opacity:.97,
+   'pointer-events':'none','aria-label':'Durée ouverture échappement'},parent);
+ for(const m of marks){
+   const isAA=m.key==='aa',isAdmission=m.key==='aoa'||m.key==='rfa';
+   const r=isAA?rAllumage:(isAdmission?rAdmission:rEchappement);
+   const th=(m.a%360)*rad,x=885-r*Math.cos(th),y=CY-r*Math.sin(th);
+   const labR=isAA?rAllumage+24:r+24;
+   // Le libellé AA est volontairement au-dessus de l'axe de bielle, bien dégagé.
+   const tx=isAA?x+31:885-labR*Math.cos(th);
+   const ty=isAA?CY-17:CY-labR*Math.sin(th);
+   const el=$(m.key),mark=svg('g',{'data-timing-key':m.key,role:'slider',tabindex:0,
+     'aria-label':`${m.label} : faire glisser autour de l'épure pour modifier l'angle`,
+     'aria-valuemin':el.min,'aria-valuemax':el.max,'aria-valuenow':q[m.key].toFixed(1),
+     'aria-valuetext':`${fmt(q[m.key],1)} degrés`},parent);
+   svg('title',{},mark).textContent=`${m.label} = ${fmt(q[m.key],1)}° · glisser pour modifier`;
+   svg('line',{x1:885-(r-14)*Math.cos(th),y1:CY-(r-14)*Math.sin(th),
+     x2:885-(r+9)*Math.cos(th),y2:CY-(r+9)*Math.sin(th),stroke:m.color,'stroke-width':3.1},mark);
+   // Un disque visible entouré d'une zone tactile transparente plus grande.
+   svg('circle',{cx:x,cy:y,r:6.5,fill:m.color,stroke:'#fff','stroke-width':1.5},mark);
+   svg('circle',{cx:x,cy:y,r:15,fill:'transparent',stroke:'transparent',class:'timing-focus'},mark);
+   const t=tnode(mark,tx,isAA?ty:ty+(ty<CY?-5:14),`${m.label} ${fmt(q[m.key],0)}°`,
+     {'text-anchor':'middle','font-size':isAA?12:11.5,'font-weight':800,fill:m.color});
+   // Les étiquettes sont informatives, la zone draggable est le repère circulaire.
+   t.setAttribute('pointer-events','none');
+ }
+ if(selected){const restore=parent.querySelector(`[data-timing-key="${selected}"]`);if(restore)restore.focus({preventScroll:true});}
+}
+// Épure de levée classique : on fait démarrer l'axe horizontal au PMH combustion.
+// Le simulateur principal démarre au PMH admission : le décalage de 360°
+// permet d'obtenir comme sur la référence : AOE, RFE / AOA, puis RFA.
+// L'abscisse 360° du graphique suit exactement le PMH du piston ;
+// l'abscisse 540° suit le PMB. L'axe s'adapte à la course du vilebrequin.
+const LIFT_CHART={left:0,right:720,top:39,bottom:119,maxMM:10,shownMaxMM:9};
+const liftChartX=a=>LIFT_CHART.left+(LIFT_CHART.right-LIFT_CHART.left)*a/720;
+const liftChartY=lev=>LIFT_CHART.bottom-(LIFT_CHART.bottom-LIFT_CHART.top)*lev/LIFT_CHART.maxMM;
+const liftChartToSimulation=a=>(a+360)%720;
+function drawValveLiftDiagram(){
+ const root=$('valveLiftDiagramContent');root.replaceChildren();
+ const c=LIFT_CHART,blue='#1677a6',orange='#e88928';
+ // Zone cliquable du curseur alignée sur toute la largeur de l'axe (échelle variable).
+ $('liftAxisHit').setAttribute('x',c.left);
+ $('liftAxisHit').setAttribute('y',c.bottom-13);
+ $('liftAxisHit').setAttribute('width',c.right-c.left);
+ $('liftAxisThumb').setAttribute('cy',c.bottom);
+ $('liftCurrentLine').setAttribute('y2',c.bottom);
+ tnode(root,c.left,14,'LEVÉE DES SOUPAPES',{'font-size':13,'font-weight':700,fill:'#334957'});
+ tnode(root,c.left-15,c.top-13,'mm',{'font-size':10.4,fill:'#667983'});
+ // Ordonnée de levée et abscisse en degrés vilebrequin, sans rectangle.
+ for(const val of [0,5,10]){
+   const y=liftChartY(val);
+   if(val>0)svg('line',{x1:c.left,y1:y,x2:c.right,y2:y,stroke:'#e8edef','stroke-width':.85,'stroke-dasharray':'3 5'},root);
+   svg('line',{x1:c.left-4,y1:y,x2:c.left,y2:y,stroke:'#637783','stroke-width':1.1},root);
+   tnode(root,c.left-8,y+3,String(val),{'text-anchor':'end','font-size':10.8,fill:'#5d6d77'});
+ }
+ svg('line',{x1:c.left,y1:c.top-3,x2:c.left,y2:c.bottom,stroke:'#435868','stroke-width':1.5},root);
+ svg('line',{x1:c.left,y1:c.bottom,x2:c.right+5,y2:c.bottom,stroke:'#435868','stroke-width':1.5},root);
+ svg('path',{d:`M${c.right+5} ${c.bottom-3.5} L${c.right+11} ${c.bottom} L${c.right+5} ${c.bottom+3.5}`,fill:'none',stroke:'#435868','stroke-width':1.4},root);
+ for(const a of [0,180,360,540,720]){
+   const x=liftChartX(a);
+   svg('line',{x1:x,y1:c.bottom,x2:x,y2:c.bottom+4,stroke:'#596e79','stroke-width':1},root);
+   tnode(root,x,c.bottom+16,`${a}°`,{'font-size':10.8,'text-anchor':'middle',fill:'#465d6a'});
+   tnode(root,x,c.bottom+30,a===180||a===540?'PMB':'PMH',{'font-size':9.8,'text-anchor':'middle',fill:'#697e8b'});
+   // Repères pédagogiques sous les PMH : combustion en début et fin de cycle,
+   // croisement des soupapes au PMH central de 360°.
+   if(a===360)tnode(root,x,c.bottom+44,'Croisement',{'font-size':10,'text-anchor':'middle',fill:'#596e7a'});
+   if(a===0||a===720)tnode(root,x,c.bottom+44,'Combustion',{'font-size':10,'text-anchor':'middle',fill:cycleColors.combustion});
+ }
+ // Les quatre abréviations AOE, RFE, AOA et RFA partagent la même hauteur
+ // au-dessus du diagramme, indépendamment des réglages angulaires.
+ const events=[
+  {at:model.aoe-360,label:'AOE',color:orange},
+  {at:360+q.rfe,label:'RFE',color:orange},
+  {at:360-q.aoa,label:'AOA',color:blue},
+  {at:540+q.rfa,label:'RFA',color:blue}
+ ];
+ for(const e of events){
+   const x=liftChartX(e.at);
+   svg('line',{x1:x,y1:34,x2:x,y2:c.bottom,stroke:e.color,'stroke-width':1.15,'stroke-dasharray':'3 4',opacity:.6},root);
+   // Quand AOA et RFE sont presque confondus, les noms restent sur la même
+   // ligne, avec une séparation latérale pour ne pas se masquer.
+   const nearCross = Math.abs((360+q.rfe)-(360-q.aoa))<40;
+   const shift = nearCross && e.label==='AOA' ? -13 : nearCross && e.label==='RFE' ? 13 : 0;
+   tnode(root,x+shift,30,e.label,{'text-anchor':'middle','font-size':10.7,'font-weight':700,fill:e.color});
+ }
+ // Repères colorés des quatre temps sous l'axe angulaire, sans traits horizontaux.
+ // Les noms sont placés entre les valeurs angulaires ; PMH/PMB et Combustion/Croisement
+ // sont décalés plus bas pour conserver une lecture claire.
+ const fourStrokes=[
+   {from:0,to:180,name:'DÉTENTE',work:'temps moteur',color:cycleColors.detente},
+   {from:180,to:360,name:'ÉCHAPPEMENT',work:'temps résistant',color:cycleColors.echappement},
+   {from:360,to:540,name:'ADMISSION',work:'temps résistant',color:cycleColors.admission},
+   {from:540,to:720,name:'COMPRESSION',work:'temps résistant',color:cycleColors.compression}
+ ];
+ for(const t of fourStrokes){
+   const start=liftChartX(t.from),end=liftChartX(t.to);
+   tnode(root,(start+end)/2,c.bottom+30,`${t.name} (${t.work})`,
+     {'font-size':9.4,'text-anchor':'middle','font-weight':600,fill:t.color});
+ }
+ // Les deux profils sont recalculés depuis les angles de distribution modifiés.
+ for(const v of [
+   {id:'echappement',color:orange},
+   {id:'admission',color:blue}
+ ]){
+   const parts=[];
+   for(let a=0;a<=720;a+=2){
+     const y=liftChartY(c.shownMaxMM*lift(liftChartToSimulation(a),v.id));
+     parts.push(`${a===0?'M':'L'}${liftChartX(a).toFixed(2)} ${y.toFixed(2)}`);
+   }
+   svg('path',{d:parts.join(' '),fill:'none',stroke:v.color,'stroke-width':2.9,
+     'stroke-linecap':'round','stroke-linejoin':'round','aria-label':`Profil de levée ${v.id}`},root);
+ }
+ updateValveLiftCursor();
+}
+function updateValveLiftCursor(){
+ const xAngle=(angle+360)%720,x=liftChartX(xAngle);
+ $('liftCurrentLine').setAttribute('x1',x);$('liftCurrentLine').setAttribute('x2',x);
+ $('liftAxisThumb').setAttribute('cx',x);
+ $('liftAxisSlider').setAttribute('aria-valuenow',angle.toFixed(1));
+ $('liftAxisSlider').setAttribute('aria-valuetext',`${fmt(angle,1)} degrés vilebrequin`);
+ for(const id of ['echappement','admission']){
+   const dot=$(id==='echappement'?'liftCurrentExhaust':'liftCurrentIntake');
+   dot.setAttribute('cx',x);
+   dot.setAttribute('cy',liftChartY(LIFT_CHART.shownMaxMM*lift(angle,id)));
+ }
+}
+function drawIdealAngleTimeline(){
+ const root=$('idealAngleDrawing');root.replaceChildren();
+ const left=LIFT_CHART.left,right=LIFT_CHART.right,y=37;
+ // Axe autonome 0–720° : sens temporel du moteur (admission dès 0°).
+ $('idealAngleHit').setAttribute('x',left);
+ $('idealAngleHit').setAttribute('width',right-left);
+ tnode(root,left,12,'ANGLE VILEBREQUIN (°)',{'font-size':12.5,'font-weight':700,fill:'#3c5462'});
+ svg('line',{x1:left,y1:y,x2:right+5,y2:y,stroke:'#405967','stroke-width':1.8},root);
+ svg('path',{d:`M${right+5} ${y-4} L${right+12} ${y} L${right+5} ${y+4}`,fill:'none',stroke:'#405967','stroke-width':1.5},root);
+ // Quatre segments de 180° : couleur de chaque temps moteur sur l'axe.
+ const axePhases=[
+   {from:0,to:180,color:cycleColors.admission},
+   {from:180,to:360,color:cycleColors.compression},
+   {from:360,to:540,color:cycleColors.detente},
+   {from:540,to:720,color:cycleColors.echappement}
+ ];
+ for(const ph of axePhases){
+   svg('line',{x1:left+(right-left)*ph.from/720,y1:y,
+     x2:left+(right-left)*ph.to/720,y2:y,
+     stroke:ph.color,'stroke-width':4.4,'stroke-linecap':'butt'},root);
+ }
+ for(const t of [0,180,360,540,720]){
+   const x=left+(right-left)*t/720;
+   svg('line',{x1:x,x2:x,y1:y-5,y2:y+5,stroke:'#405967','stroke-width':1.3},root);
+   tnode(root,x,y+19,`${t}°`,{'font-size':11,'text-anchor':'middle',fill:'#486273'});
+   if(t===0||t===360||t===720){
+     tnode(root,x,y+32,'PMH',{'font-size':9.7,'text-anchor':'middle',fill:'#6a7d86'});
+   }else{
+     tnode(root,x,y+32,'PMB',{'font-size':9.7,'text-anchor':'middle',fill:'#6a7d86'});
+   }
+ }
+ const phases=[
+   {a:0,b:180,name:'ADMISSION',work:'temps résistant',color:cycleColors.admission},
+   {a:180,b:360,name:'COMPRESSION',work:'temps résistant',color:cycleColors.compression},
+   {a:360,b:540,name:'DÉTENTE',work:'temps moteur',color:cycleColors.detente},
+   {a:540,b:720,name:'ÉCHAPPEMENT',work:'temps résistant',color:cycleColors.echappement}
+ ];
+ for(const ph of phases){
+   const x=left+(right-left)*(ph.a+ph.b)/1440;
+   tnode(root,x,y+32,`${ph.name} (${ph.work})`,{'font-size':9.4,'font-weight':600,'text-anchor':'middle',fill:ph.color});
+ }
+ tnode(root,(left+right)/2,y-13,'ÉTINCELLE AU PMH',{'font-size':10.8,'font-weight':650,'text-anchor':'middle',fill:cycleColors.combustion});
+ updateIdealAngleCursor();
+}
+// Une rotation du vilebrequin ne représente que 360°. Les quatre temps
+// couvrent 720° : les deux cercles concentriques distinguent les deux tours.
+// Sur chaque cercle, l'arc supérieur va du PMH (gauche) au PMB (droite),
+// et l'inférieur du PMB (droite) au PMH (gauche).
+// Les quatre demi-cercles sont construits lorsque la géométrie du moteur change.
+// À chaque mouvement du vilebrequin, seul le demi-cercle de la phase active est visible.
+let idealArcPaths=[];
+function idealCrankPhaseIndex(){
+ return Math.min(3,Math.floor(clamp(angle,0,719.999)/180));
+}
+function updateIdealCrankPhaseArcs(){
+ const active=idealCrankPhaseIndex();
+ idealArcPaths.forEach((path,index)=>path.style.display=index===active?'':'none');
+}
+function drawIdealCrankPhaseArcs(){
+ const root=$('idealCrankPhaseArcs');root.replaceChildren();
+ idealArcPaths=[];
+ const cx=crankCenter(),cy=CY,R=crankRadius();
+ const allArcs=[
+   {phase:'Admission',color:cycleColors.admission,r:R,upper:true,from:0,to:180},
+   {phase:'Compression',color:cycleColors.compression,r:R,upper:false,from:180,to:360},
+   {phase:'Détente',color:cycleColors.detente,r:R,upper:true,from:360,to:540},
+   {phase:'Échappement',color:cycleColors.echappement,r:R,upper:false,from:540,to:720}
+ ];
+ for(const arc of allArcs){
+   const r=arc.r;
+   const d=arc.upper
+     ? `M${cx-r} ${cy} A${r} ${r} 0 0 1 ${cx+r} ${cy}`
+     : `M${cx+r} ${cy} A${r} ${r} 0 0 1 ${cx-r} ${cy}`;
+   const path=svg('path',{d,fill:'none',stroke:arc.color,'stroke-width':4.1,
+     'stroke-linecap':'round',opacity:.98},root);
+   svg('title',{},path).textContent=`${arc.phase} (${arc.phase==='Détente'?'temps moteur':'temps résistant'}) — ${arc.from}° à ${arc.to}°`;
+   idealArcPaths.push(path);
+ }
+ // Les positions PMH / PMB restent visibles, même quand l'arc change de couleur.
+ const pmStyle={'font-size':10.5,'font-weight':650,'text-anchor':'middle',fill:'#4b5b66'};
+ tnode(root,cx-R-20,cy+4,'PMH',pmStyle);
+ tnode(root,cx+R+20,cy+4,'PMB',pmStyle);
+ updateIdealCrankPhaseArcs();
+}
+function updateIdealAngleCursor(){
+ const x=LIFT_CHART.left+(LIFT_CHART.right-LIFT_CHART.left)*angle/720;
+ $('idealAngleThumb').setAttribute('cx',x);
+ $('idealAngleSlider').setAttribute('aria-valuenow',angle.toFixed(1));
+ $('idealAngleSlider').setAttribute('aria-valuetext',`${fmt(angle,1)} degrés vilebrequin`);
+}
+function redraw(){
+ model=buildModel();
+ updateGreenState();
+ // Les angles de came sont une moitié des angles vilebrequin.
+ cams.admission.mid=(model.rfa-q.aoa)/2;
+ cams.admission.half=(model.rfa+q.aoa)/2;
+ cams.echappement.mid=(model.aoe+720+q.rfe)/2;
+ cams.echappement.half=(720+q.rfe-model.aoe)/2;
+ $('cSwept').textContent=fmt(swept())+' cm³';$('cVmax').textContent=fmt(q.chamber+swept())+' cm³';$('cEpsilon').textContent=fmt(eps(),2)+' : 1';
+ $('cRadius').textContent=fmt(q.stroke/2)+' mm';$('cRod').textContent=fmt(q.rodRatio*q.stroke/2)+' mm';
+ $('cRodRatio').textContent=fmt(q.rodRatio,2);$('cInvRodRatio').textContent=fmt(1/q.rodRatio,3);
+ $('cP2').textContent=fmt(p2(),2)+' bar abs.';$('cP3').textContent=fmt(p3(),2)+' bar abs.';$('cP4').textContent=fmt(p4(),2)+' bar abs.';
+ $('cQIn').textContent=fmt(q.heatInput,1)+' J/cycle/cylindre';$('p3Calculated').textContent=fmt(p3(),2)+' bar';
+ $('workTheoretical').textContent=fmt(workIdealJ(),1)+' J';
+ $('workReal').textContent=fmt(workRealJ(),1)+' J';
+ $('etaIdeal').textContent=fmt(ottoEta()*100,1)+' %';
+ $('heatIdeal').textContent=fmt(idealHeatJ(),1)+' J';
+ const mm=admissionMassModel();
+ $('cManifoldPressure').textContent=fmt(q.manifoldPressure,3)+' bar abs.';
+ $('cManifoldDensity').textContent=fmt(mm.density,3)+' kg/m³';
+ $('cFreshMass').textContent=fmt(mm.freshMass*1e6,1)+' mg';
+ $('cResidualMass').textContent=fmt(mm.residualMass*1e6,1)+' mg';
+ $('cInertiaMass').textContent=fmt(mm.addedMass*1e6,1)+' mg (+'+fmt(q.inertiaGain,1)+' %)';
+ $('cRFAMass').textContent=fmt(mm.totalRFA*1e6,1)+' mg';
+ $('cPAdmMid').textContent=fmt(model.pAdmission,3)+' bar abs. à '+fmt(model.admissionMid,1)+'°';
+ $('cPAt180').textContent=fmt(q.pAt180,3)+' bar abs.';
+ $('cRFATheoretical').textContent=fmt(mm.pRFACalculated,3)+' bar abs.';
+ $('cRFAUsed').textContent=fmt(q.pAtRFA,3)+' bar abs. '+(rfaManualOverride?'(corrigée à la souris / manuellement)':'(calcul automatique)');
+ $('cRFAMassUsed').textContent=fmt(q.pAtRFA*1e5*mm.vRFA/(AIR_GAS_R*(q.cylinderTemp+273.15))*1e6,1)+' mg'+(rfaManualOverride?' (masse déduite de la correction)':'');
+ $('cPExhMid').textContent=fmt(model.pExhaust,2)+' bar abs. à '+fmt(model.exhaustMid,1)+'°';
+ $('cIgnitionAngle').textContent=fmt(model.ignitionAngle,0)+'° vilebrequin';
+ $('cFillIndex').textContent=fmt(fillIndex()*100,1)+' %';
+ $('cCompFactor').textContent=fmt(q.compressionFactor,3)+' (réglable)';
+ $('cVRFA').textContent=fmt(model.vRFA,2)+' cm³';
+ $('cVAA').textContent=fmt(model.vAA,2)+' cm³';
+ $('cPCompReal').textContent=fmt(model.pBefore,2)+' bar abs. à '+fmt(model.ignitionAngle,1)+'°';
+ $('cNComp').textContent=fmt(model.nCompression,3)+' (équivalent)';
+ $('cExpReal').textContent=fmt(model.nExpansion,3)+' (ajusté)';
+ $('cPeakPressure').textContent=fmt(model.peakPressure,2)+' bar abs.';
+ $('cPeakAngle').textContent=fmt(model.peak-360,1)+'° relatif au PMH (360°) · '+fmt(model.peak,1)+'° vilebrequin';
+ $('cVPeak').textContent=fmt(model.vPeak,2)+' cm³';
+ $('cFlameDistance').textContent=fmt(model.flameDistance*1000,1)+' mm';
+ $('cBurnDuration').textContent=fmt(model.burnDuration,1)+'° vilebrequin';
+ $('cBurnEnd').textContent=fmt(model.burnEnd,1)+'° vilebrequin';
+ $('cPAtTDC').textContent=fmt(realPressure(360),2)+' bar abs.';
+ $('combustionSummary').textContent='Combustion calculée : '+fmt(model.peakPressure,2)+' bar à '+fmt(model.peak-360,1)+'° par rapport au PMH (AA '+fmt(q.aa,1)+'° avant PMH) · durée de combustion '+fmt(model.burnDuration,1)+'° · Q = '+fmt(q.heatInput,0)+' J.';
+ const comparisons=[{aa:Math.max(0,q.aa-10),label:'Moins d’avance'},{aa:q.aa,label:'Réglage actuel'},{aa:Math.min(40,q.aa+10),label:'Plus d’avance'}];
+ const scenario=sparkAA=>simulateCombustion(360-sparkAA,model.aoe,compressionPressureAt(360-sparkAA));
+ $('sparkComparison').replaceChildren(...comparisons.map(item=>{
+   const c=scenario(item.aa),tile=document.createElement('div');
+   tile.className='spark-tile'+(item.label==='Réglage actuel'?' spark-current':'');
+   // Tous les contenus sont des sorties calculées, non modifiables.
+   const header=document.createElement('span');header.className='spark-label';header.textContent=item.label;
+   const timing=document.createElement('strong');timing.textContent='AA '+fmt(item.aa,1)+'°';
+   const value=document.createElement('b');value.textContent=fmt(c.peakPressure,2)+' bar';
+   const location=document.createElement('span');location.textContent='Pic à '+fmt(c.peak-360,1)+'° / PMH';
+   tile.append(header,timing,value,location);return tile;
+ }));
+ $('realModelInfo').textContent=`Admission : ${fmt(q.manifoldPressure,2)} bar tubulure, ${fmt(model.pAdmission,2)} bar admission cylindre ; RFA ${fmt(q.pAtRFA,2)} bar (${rfaManualOverride?'corrigé manuellement':'calculé avec inertie'}). AA = ${fmt(q.aa,1)}° avant PMH ; début à ${fmt(model.ignitionAngle,1)}° ; Pmax calculée = ${fmt(model.peakPressure,2)} bar à ${fmt(model.peak-360,1)}° après PMH. Durée de combustion : ${fmt(model.burnDuration,1)}° ; AOE à ${fmt(model.aoe,1)}°. La pression après combustion rejoint P(AOE) par une détente polytropique ajustée.`;
+ const warnings=[...(window.__paramMessages||[])];
+ if(p3()<=p2())warnings.push('L’apport de chaleur doit être positif pour obtenir P₃ > P₂.');
+ if(q.pAt180<0.2||q.pAt180>q.p0+0.5)warnings.push('Pression au PMB très éloignée de la pression atmosphérique : vérifie la jonction admission–compression.');
+ if(rfaManualOverride)warnings.push('RFA corrigé : la masse correspondante est déduite de la pression choisie et ne découle plus directement du taux de remplissage et du gain d’inertie.');
+ if(q.compressionFactor===0)warnings.push('k = 0 : aucune montée en pression n’est représentée entre RFA et AA.');
+ if(model.burnTruncated)warnings.push('Durée de combustion réduite pour terminer avant AOE : vitesse de flamme ou régime incompatibles avec la distribution choisie.');
+ if(model.nExpansion<=0)warnings.push('La détente post-combustion requiert un exposant non positif : diminuer la pression AOE ou augmenter Q.');
+ if(!Number.isFinite(model.nCompression)||model.nCompression<0)warnings.push('Vérifier la cohérence de la compression calculée.');
+ $('parameterWarning').textContent=warnings.join(' · ');
+ $('pvPaths').querySelectorAll('.dynamicIdeal').forEach(el=>el.remove());
+ actual.setAttribute('d',path(realPressure,0,720));drawRealPhaseSegments();idealGroup.replaceChildren();
+ // Cycle d'Otto théorique : quatre transformations à extrémités exactes.
+ // 1) Compression adiabatique  : (Vmax, Patm) -> (Vmin, P₂)
+ // 2) Combustion isochore     : (Vmin, P₂)   -> (Vmin, P₃)
+ // 3) Détente adiabatique     : (Vmin, P₃)   -> (Vmax, P₄)
+ // 4) Rejet isochore au PMB   : (Vmax, P₄)   -> (Vmax, Patm)
+ const vmin=volume(360), vmax=volume(180);
+ // Cette abscisse est STRICTEMENT commune au piston, au cycle réel et au cycle théorique.
+ const xmin=plotX(360),xmax=plotX(180);
+ $('pmhAlignmentGuide').setAttribute('x1',xmin);
+ $('pmhAlignmentGuide').setAttribute('x2',xmin);
+ $('pmhAlignmentGuide').style.display=mode==='both'?'':'none';
+ const idealAttrs={fill:'none','stroke-width':3.1,'stroke-linejoin':'round','stroke-linecap':'round'};
+ const segment=(d,color)=>svg('path',{d,...idealAttrs,stroke:color},idealGroup);
+ // Le cycle théorique est en traits pleins, coloré selon les transformations.
+ // Les échanges admission/échappement sont schématiques : tracés voisins à Patm pour distinguer
+ // les deux temps, absents en tant que processus distincts du cycle d'Otto fermé.
+ const atmosphereY=plotY(q.p0);
+ segment(`M${xmin.toFixed(3)} ${(atmosphereY-2).toFixed(3)} L${xmax.toFixed(3)} ${(atmosphereY-2).toFixed(3)}`,cycleColors.admission);
+ segment(`M${xmax.toFixed(3)} ${(atmosphereY+2).toFixed(3)} L${xmin.toFixed(3)} ${(atmosphereY+2).toFixed(3)}`,cycleColors.echappement);
+ segment(ottoAdiabatPath(180,360,q.p0,vmax),cycleColors.compression);
+ segment(`M${xmin.toFixed(3)} ${plotY(p2()).toFixed(3)} L${xmin.toFixed(3)} ${plotY(p3()).toFixed(3)}`,cycleColors.combustion);
+ segment(ottoAdiabatPath(360,540,p3(),vmin),cycleColors.detente);
+ segment(`M${xmax.toFixed(3)} ${plotY(p4()).toFixed(3)} L${xmax.toFixed(3)} ${atmosphereY.toFixed(3)}`,cycleColors.echappement);
+ // Aucun pictogramme fléché sur la courbe : lecture épurée avec légende latérale.
+ // Légende à droite du diagramme, organisée par phases et transformations.
+ {
+   const g=svg('g',{'aria-label':'Phases du cycle et transformations théoriques',
+     'pointer-events':'none'},idealGroup);
+   const left=795,startY=145,row=29;
+   tnode(g,left,startY-28,'PHASE / TRANSFORMATION',{'font-size':12.3,
+     'font-weight':750,fill:'#42596a'});
+   const entries=[
+     {phase:'Admission',work:'temps résistant',trans:'isobare',color:cycleColors.admission},
+     {phase:'Compression',work:'temps résistant',trans:'adiabatique',color:cycleColors.compression},
+     {phase:'Combustion',work:'début du temps moteur',trans:'isochore',color:cycleColors.combustion},
+     {phase:'Détente',work:'temps moteur',trans:'adiabatique',color:cycleColors.detente},
+     {phase:'Échappement',work:'temps résistant',trans:'isobare',color:cycleColors.echappement}
+   ];
+   entries.forEach((item,i)=>{
+     const y=startY+i*row;
+     svg('line',{x1:left,x2:left+22,y1:y-4,y2:y-4,stroke:item.color,
+       'stroke-width':3.2,'stroke-linecap':'round'},g);
+     tnode(g,left+30,y,`${item.phase} (${item.work})`,{'font-size':11.3,'font-weight':700,fill:item.color});
+     tnode(g,left+30,y+13,item.trans,{'font-size':10.9,fill:'#526b7b'});
+   });
+   tnode(g,left,startY+entries.length*row+12,
+     'Admission / échappement idéalisés (hors cycle d’Otto fermé)',
+     {'font-size':9.7,fill:'#768794'});
+ }
+ // Marqueurs P₂ / P₃, reportés sur l’axe des ordonnées pour dégager le graphe.
+ // Leurs petits traits de graduation sont au niveau exact de la compression et de la combustion.
+ {
+   const g=idealGroup;
+   for(const [tag,p,stroke] of [['P₂',p2(),cycleColors.compression],['P₃',p3(),cycleColors.combustion]]){
+     const y=plotY(p);
+     svg('line',{x1:329,x2:340,y1:y,y2:y,stroke,'stroke-width':2.3},g);
+     tnode(g,311,y-5,`${tag}  ${fmt(p,1)} bar`,{'text-anchor':'end','font-size':12,'font-weight':750,
+       fill:stroke,'paint-order':'stroke',stroke:'#fff','stroke-width':3.3,'stroke-linejoin':'round'});
+     svg('circle',{cx:xmin,cy:y,r:3.6,fill:'#111',stroke:'#fff','stroke-width':1},g);
+   }
+ }
+
+ $('ticks').replaceChildren();let mx=yMax();let step=mx<=15?2:mx<=32?5:mx<=65?10:20;for(let n=0;n<=mx+1e-5;n+=step){let y=plotY(n);svg('line',{x1:329,x2:335,y1:y,y2:y,stroke:'#71828d'},$('ticks'));tnode($('ticks'),321,y+4,fmt(n,0),{'text-anchor':'end','font-size':11});}
+ $('plotAnnotations').replaceChildren();
+ // Pression maximale réelle
+ {
+  const x=crank(model.peak).face,y=plotY(realPressure(model.peak)),g=$('plotAnnotations');
+  const labelY=y<110?y+18:y-36;
+  const boxX=x+27,boxY=labelY-14;
+  
+  svg('path',{d:`M${x+4} ${y-4} L${boxX+2} ${labelY-5}`,stroke:'#395967','stroke-width':1.3,fill:'none'},g);
+  svg('rect',{x:boxX,y:boxY,width:208,height:23,rx:4,fill:'#fff',opacity:0.96,stroke:'#e0e7eb','stroke-width':0.7},g);
+  tnode(g,boxX+7,labelY+2,'Pmax '+fmt(model.peakPressure,1)+' bar à '+fmt(model.peak-360,1)+'° PMH',{'font-size':11.5,'font-weight':700,fill:'#395967'});
+ }
+ // Point de mi-course admission et échappement
+ {
+  const g=$('plotAnnotations');
+  const xa=crank(model.admissionMid).face, ya=plotY(model.pAdmission);
+  const xe=crank(model.exhaustMid).face, ye=plotY(model.pExhaust);
+
+ }
+$('pvTimingMarks').replaceChildren();
+ // Distribution : labels agrandis, à l'extérieur des courbes. Angles = valeurs du tableau (° vilebrequin).
+ for(const p of [{key:'aoa',label:'AOA',color:'#1677a6',dx:31,dy:-37},
+                 {key:'rfe',label:'RFE',color:'#c47b28',dx:29,dy:48},
+                 {key:'aoe',label:'AOE',color:'#c47b28',dx:70,dy:-42},
+                 {key:'rfa',label:'RFA',color:'#1677a6',dx:18,dy:-20}]){
+   const at=model[p.key], x=crank(at).face, y=plotY(realPressure(at));
+   const label=p.label+' '+fmt(q[p.key],0)+'°';
+   const tx=x+p.dx, ty=y+p.dy, w=label.length*8.1+13, h=22, g=$('pvTimingMarks');
+   const bx=tx-7, by=ty-16;
+   svg('line',{x1:x,y1:y,x2:tx-6,y2:ty-7,stroke:p.color,'stroke-width':1.1,opacity:0.72},g);
+   svg('rect',{x:bx,y:by,width:w,height:h,rx:3,fill:'#fff',opacity:0.96},g);
+   const node=tnode(g,tx,ty,label,{'font-size':14,'font-weight':750,fill:p.color});
+   svg('title',{},node).textContent=p.label+' : '+fmt(q[p.key],0)+'° '+({aoa:'avant PMH',rfe:'après PMH',rfa:'après PMB',aoe:'avant PMB'}[p.key]);
+ }
+ // Avance à l'allumage : repère sur la courbe P–V au début de combustion.
+ {
+   const t=model.ignitionAngle,x=crank(t).face,y=plotY(realPressure(t)),g=$('pvTimingMarks');
+   
+   svg('path',{d:`M${x+4} ${y-3} L${x+34} ${y-27}`,stroke:'#bf465b','stroke-width':1.5,fill:'none'},g);
+   tnode(g,x+38,y-30,'AA '+fmt(q.aa,0)+'°',{'font-size':12,'font-weight':800,fill:'#bf465b'});
+ }
+ $('atmosLabel').setAttribute('y',plotY(q.p0)+3.5);
+ $('atmosGuide').setAttribute('x1',335);
+ $('atmosGuide').setAttribute('x2',plotX(180));
+ $('atmosGuide').setAttribute('y1',plotY(q.p0));
+ $('atmosGuide').setAttribute('y2',plotY(q.p0));
+ renderHandles();
+ // Sous l'axe P–V : notation littérale au-dessus, valeur numérique en cm³ dessous.
+ let lab=$('extremeLabels');lab.replaceChildren();
+ for(const [x,designation,value] of [
+    [leftFace(),'v',q.chamber],
+    [leftFace()+2*crankRadius(),'V + v',q.chamber+swept()]
+ ]){
+   // Petit repère sur l'axe des abscisses pour v et V + v.
+   svg('line',{x1:x,x2:x,y1:P_BOTTOM-1,y2:P_BOTTOM+7,stroke:'#5e7481','stroke-width':1.4,'stroke-linecap':'round'},lab);
+   tnode(lab,x,P_BOTTOM+21,designation,{'text-anchor':'middle','font-weight':750,'font-size':14,fill:'#405767'});
+   tnode(lab,x,P_BOTTOM+40,fmt(value,1)+' cm³',{'text-anchor':'middle','font-weight':400,'font-size':12,fill:'#546b78'});
+ }
+ const d=q.bore/80,top=CY-75*d,bottom=CY+75*d;
+ // Remonter le moteur et son diagramme de levée sans superposer les mentions
+ // PMH/PMB du moteur aux valeurs v / V + v sous le P–V.
+ // L'alignement piston–volume reste strict ; seul l'étirement en hauteur du P–V change.
+ // Les repères PMH/PMB restent à 58 unités sous le pied de l'axe P–V.
+ ENGINE_Y=Math.round(P_BOTTOM+58-top+18);
+ $('engineAssembly').setAttribute('transform',`translate(0 ${ENGINE_Y})`);
+ // Position des deux points morts au plus près du haut du cylindre,
+ // avec hauteur dépendante de l'alésage pour éviter le chevauchement.
+ const engineLabels=$('engineExtremeLabels');engineLabels.replaceChildren();
+ const extremaLabelY=ENGINE_Y+top-18;
+ for(const [x,name] of [[leftFace(),'PMH'],[leftFace()+2*crankRadius(),'PMB']]){
+   svg('rect',{x:x-20,y:extremaLabelY-14,width:40,height:19,rx:3,fill:'#fff',opacity:.95},engineLabels);
+   tnode(engineLabels,x,extremaLabelY,name,{'text-anchor':'middle','font-weight':700,'font-size':12.5,fill:'#536d7e'});
+   // Petit trait vertical traversant la paroi supérieure, à l'abscisse exacte du point mort.
+   svg('line',{x1:x,y1:ENGINE_Y+top-10,x2:x,y2:ENGINE_Y+top+9,
+     stroke:'#536d7e','stroke-width':2,'stroke-linecap':'round'},engineLabels);
+ }
+ const maxPistonX=leftFace()+2*crankRadius();
+ const normalWallEnd=Math.max(733,maxPistonX+70);
+ // En moteur supercarré uniquement : les deux parois s'arrêtent avant le maneton
+ // au PMH (point le plus à gauche de sa trajectoire), sans modifier les autres configurations.
+ const isSupercarre=q.bore/q.stroke>1.25;
+ const wallEnd=isSupercarre
+   ? Math.min(normalWallEnd,maxPistonX+66,crankCenter()-crankRadius()-22)
+   : normalWallEnd;
+ $('cylinderWalls').setAttribute('d',`M335 ${top} H${wallEnd} M335 ${bottom} H${wallEnd}`);
+ $('cylinderClipRect').setAttribute('width',wallEnd-338);
+ $('cylinderClipRect').setAttribute('y',top);$('cylinderClipRect').setAttribute('height',bottom-top);
+ const plotEnd=Math.max(720,maxPistonX+55);
+ $('pvFrame').setAttribute('d',`M335 ${P_TOP} V${P_BOTTOM} H${plotEnd}`);
+ $('pvYAxis').setAttribute('d',`M335 ${P_BOTTOM} V51`);
+ $('plotGrid').setAttribute('width',Math.max(422,plotEnd+24-335));
+ $('plotGrid').setAttribute('height',P_BOTTOM-49);
+ $('pmhAlignmentGuide').setAttribute('y2',P_BOTTOM-1);
+ $('volumeAxisLabel').setAttribute('x',plotEnd+12);
+ $('volumeAxisLabel').setAttribute('y',P_BOTTOM+6);
+ $('instantVolumeValue').setAttribute('y',P_BOTTOM-10);
+ // Vue adaptative sur les fortes courses : aucune coupe de l'épure et de la manivelle.
+ // L'échelle horizontale du graphique de levée correspond à la translation réelle du piston :
+ // PMH (360°) = face du piston au PMH ; PMB (540°) = face au PMB.
+ const spanPerDegree=2*crankRadius()/180;
+ LIFT_CHART.left=leftFace()-360*spanPerDegree;
+ LIFT_CHART.right=leftFace()+360*spanPerDegree;
+ const sceneWidth=Math.ceil(Math.max(1160,crankCenter()+crankRadius()+45,plotEnd+100,LIFT_CHART.right+75));
+ // Conserver la totalité des 720° visibles, y compris en longue course.
+ const sceneLeft=Math.floor(Math.min(VISUAL_LEFT_SHIFT,LIFT_CHART.left-65));
+ // Prévoir un bas de page suffisant pour le diagramme et son libellé croisement.
+ const valveLiftTop=CY+Math.max(110,crankRadius())+35;
+ // Remonter l'axe de navigation théorique et les courbes de levée réelles
+ // SANS déplacer la culasse, le piston, ni le cercle du maneton.
+ // Le gain vertical est réaffecté à l'échelle de pression P–V.
+ const idealTimelineTop=valveLiftTop-28;
+ const realLiftTop=valveLiftTop-30;
+ const sceneHeight=mode==='ideal'
+   ? Math.max(P_BOTTOM+380,Math.ceil(ENGINE_Y+idealTimelineTop+80))
+   : Math.max(P_BOTTOM+465,Math.ceil(ENGINE_Y+realLiftTop+LIFT_CHART.bottom+96));
+ $('scene').setAttribute('viewBox',`${sceneLeft} 0 ${sceneWidth-sceneLeft} ${sceneHeight}`);
+ $('scene').style.setProperty('--scene-min-width',(sceneWidth-sceneLeft)+'px');
+ // Les segments de culasse épousent les têtes des deux soupapes fermées,
+ // dont l'écartement reste constant, quelle que soit la valeur d'alésage.
+ const a=cams.admission.y, e=cams.echappement.y, valveHalf=18;
+ $('cylinderHead').setAttribute('d',`M335 ${top} V${a-valveHalf} M335 ${e+valveHalf} V${bottom}`);
+ $('cylinderHeadMid').setAttribute('d',`M335 ${a+valveHalf} V${e-valveHalf}`);
+ $('cylinderGas').setAttribute('y',top);$('cylinderGas').setAttribute('height',bottom-top);
+ $('integratedTiming').setAttribute('transform',`translate(${crankCenter()-885} 0)`);
+ $('timingMarks').setAttribute('transform',`translate(${crankCenter()-885} 0)`);
+ $('rotationDirectionAlways').setAttribute('transform',`translate(${crankCenter()-885} 0)`);
+ $('crankPinOrbit').setAttribute('cx',crankCenter());
+ $('crankPinOrbit').setAttribute('r',crankRadius());
+ drawIdealCrankPhaseArcs();
+ const radius=crankRadius();
+ $('timingAxisH').setAttribute('x1',885-radius-8);$('timingAxisH').setAttribute('x2',885+radius+8);
+ $('timingAxisV').setAttribute('y1',565-radius-8);$('timingAxisV').setAttribute('y2',565+radius+8);
+ $('timingPMH').setAttribute('x',885-radius-20);$('timingPMB').setAttribute('x',885+radius+20);
+ for(let id of ['crankCenter','crankCenterDot'])$(id).setAttribute('cx',crankCenter());
+ // Les courbes de levée sont installées sous les cames, à hauteur adaptée au rayon.
+ $('valveLiftDiagram').setAttribute('transform',`translate(0 ${realLiftTop})`);
+ $('idealAngleTimeline').setAttribute('transform',`translate(0 ${idealTimelineTop})`);
+ // Traits verticaux pointillés reliant le graphique de levée au dessin du moteur
+ // pour le PMH de croisement (360°) et le PMB (540°).
+ const guideY1=bottom+8, guideY2=realLiftTop+34;
+ $('liftGuidePMHCross').setAttribute('x1',leftFace());
+ $('liftGuidePMHCross').setAttribute('x2',leftFace());
+ $('liftGuidePMHCross').setAttribute('y1',guideY1);
+ $('liftGuidePMHCross').setAttribute('y2',guideY2);
+ $('liftGuidePMB').setAttribute('x1',leftFace()+2*crankRadius());
+ $('liftGuidePMB').setAttribute('x2',leftFace()+2*crankRadius());
+ $('liftGuidePMB').setAttribute('y1',guideY1);
+ $('liftGuidePMB').setAttribute('y2',guideY2);
+ drawTimingMarks();
+ drawValveLiftDiagram();
+ drawIdealAngleTimeline();
+ // Le titre est placé sous le cercle de distribution et suit son rayon,
+ // en préservant l’espace nécessaire au graphique de levée situé en dessous.
+ $('timingTitle').setAttribute('x',885);
+ $('timingTitle').setAttribute('y',CY+radius+26);
+ updateRotationArrow();
+ // Les volumes mini/maxi sont déjà indiqués avec la notation v et V + v.
+ // La valeur instantanée est mise à jour par render() sous le trait rouge.
+ selectMode();render();
+}
+function camShape(c,t,idealOpen=null){let beta=idealOpen===null?(t-c.mid)/2:(idealOpen?0:180),shape='',baseR=22,liftR=19;for(let j=0;j<=180;j++){let a=-Math.PI+2*Math.PI*j/180,delta=((a-beta*rad+3*Math.PI)%(2*Math.PI))-Math.PI,u=Math.abs(delta)/(c.half/2*rad);let rr=baseR;if(u<1){rr=baseR+liftR*0.5*(1+Math.cos(Math.PI*u));}shape+=(j?'L':'M')+(c.x+rr*Math.cos(a)).toFixed(2)+' '+(c.y+rr*Math.sin(a)).toFixed(2)+' ';}c.shape.setAttribute('d',shape+'Z');let lv=idealOpen===null?lift(t,c.id):(idealOpen?1:0);let fx=c.x+baseR+liftR*lv+2;c.follower.setAttribute('x',fx);c.stem.setAttribute('x1',fx+8);c.stem.setAttribute('x2',331+20*lv);return lv;}
+function phase(t){
+ if(t<180)return 'Admission';
+ if(t<model.ignitionAngle)return 'Compression';
+ if(t<model.burnEnd)return 'Combustion';
+ if(t<model.aoe)return 'Détente';
+ return 'Échappement';
+}
+function phaseTheorique(t){
+ if(t<180)return 'Admission';
+ if(t<360)return 'Compression';
+ if(t<370)return 'Combustion'; // visibilité pédagogique de l'étincelle, au PMH exact
+ if(t<540)return 'Détente';
+ return 'Échappement';
+}
+// Résumé pédagogique intégré à la partie graphique : une colonne à gauche du P–V,
+// indépendante du panneau de paramètres (masqué en mode « Adapter à l’écran »).
+// Les descriptions complètes sont conservées dans les rubriques en bas de page.
+function drawPvAssumptionsOnGraph(){
+ const root=$('pvAssumptionsOnGraph');root.replaceChildren();
+ const theorique=mode==='ideal';
+ // Haut aligné sur l'origine du graphique P–V (grille à y=49), sans décaler le tracé.
+ const x=-110,w=298,top=49,h=theorique?224:424;
+ const headings=theorique
+   ? ['Combustion instantanée au PMH',
+      'Compression/détente isentropiques',
+      'Sans pertes de charge/contre-pression',
+      'Soupapes instantanées aux points morts',
+      'Inertie des gaz négligée']
+   : ['Combustion déflagrante progressive',
+      'Échanges thermiques avec les parois',
+      'Étanchéité perfectible',
+      'Pertes par pompage',
+      'Vitesse et inertie de la veine gazeuse',
+      'Soupapes : levée progressive',
+      '→ Épure de distribution adaptée'];
+ const sublines=[
+   ['Qualité du mélange (richesse, homogénéité)',
+    'Masse de charge, délai d’inflammation → AA'],
+   ['Chaleur échangée : pression modifiée',
+    'en compression et en détente'],
+   ['Fuites : segments et/ou soupapes',
+    'Perte de pression à la compression',
+    'et/ou à la détente'],
+   ['P admission < P atmosphérique',
+    'P échappement > P atmosphérique'],
+   ['Ondes et oscillations (acoustique)',
+    '→ Calage des soupapes adapté'],
+   ['Ouverture/fermeture selon profil de came'],
+   ['AOA, RFA, AOE, RFE : échanges gazeux']
+ ];
+ const fullEntries=[...$(theorique?'idealAssumptions':'realAssumptions').querySelectorAll('li')];
+ svg('rect',{x,y:top,width:w,height:h,rx:9,fill:'#fff','fill-opacity':.97,
+   stroke:'#dce6eb','stroke-width':1},root);
+ tnode(root,x+13,top+23,theorique?'SIMPLIFICATIONS · CYCLE THÉORIQUE':'PHÉNOMÈNES · PRATIQUE/RÉEL',
+   {'font-size':12.2,'font-weight':750,fill:'#304d60'});
+ svg('line',{x1:x+13,x2:x+w-13,y1:top+32,y2:top+32,stroke:'#dce6eb','stroke-width':1},root);
+ const firstY=top+(theorique?59:59),gap=theorique?31:49;
+ headings.forEach((heading,i)=>{
+   const yy=firstY+i*gap;
+   const mark=svg('circle',{cx:x+19,cy:yy-3,r:3.5,fill:theorique?'#577c94':'#76919e'},root);
+   const label=tnode(root,x+30,yy,heading,{'font-size':theorique?12.3:11.8,
+     'font-weight':theorique?570:650,fill:'#354e5f'});
+   const detail=fullEntries[i]?.textContent?.replace(/\s+/g,' ').trim();
+   if(detail){svg('title',{},mark).textContent=detail;svg('title',{},label).textContent=detail;}
+   if(!theorique){
+     sublines[i].forEach((line,j)=>{
+       const subtitle=tnode(root,x+30,yy+14+j*12,line,{'font-size':10.4,fill:'#647d8b'});
+       if(detail)svg('title',{},subtitle).textContent=detail;
+     });
+   }
+ });
+ if(!theorique)tnode(root,x+14,top+h-12,'Effets physiques, calculs simplifiés',
+   {'font-size':10.1,fill:'#8294a1'});
+}
+
+function selectMode(){
+ const theorique=mode==='ideal';
+ drawPvAssumptionsOnGraph();
+ $('idealCrankPhaseArcs').style.display=theorique?'':'none';
+ $('integratedTiming').style.display=theorique?'none':'';
+ $('timingMarks').style.display=theorique?'none':'';
+ $('valveLiftDiagram').style.display=theorique?'none':'';
+ $('liftToEngineGuides').style.display=theorique?'none':'';
+ $('idealAngleTimeline').style.display=theorique?'':'none';
+ $('idealAssumptions').style.display=theorique?'':'none';
+ $('realAssumptions').style.display=theorique?'none':'';
+ // Ne montrer dans la légende que la courbe correspondant au mode choisi.
+ const legendRows=$('plotLegend').children;
+ for(let i=0;i<legendRows.length;i++)
+   legendRows[i].style.display=(theorique ? i>=2 : i<2)?'':'none';
+ $('plotLegend').setAttribute('transform',theorique?'translate(800 51)':'translate(800 74)');
+ actual.style.display=mode==='ideal'?'none':'';realPhaseSegments.style.display=mode==='ideal'?'none':'';idealGroup.style.display=mode==='real'?'none':''; $('pmhAlignmentGuide').style.display=mode==='both'?'':'none';
+ $('realDot').style.display=mode==='ideal'?'none':'';$('idealDot').style.display=mode==='real'?'none':'';
+ $('plotAnnotations').style.display=mode==='ideal'?'none':'';
+ $('pvTimingMarks').style.display=mode==='ideal'?'none':'';
+ $('greenHandles').style.display=mode==='ideal'?'none':'';
+ $('rotationDirection').style.display=theorique?'none':'';
+ $('rotationDirectionAlways').style.display=theorique?'':'none';}
+function render(){let m=crank(angle),v=volume(angle),pr=realPressure(angle),pi=idealPressure(angle),p=mode==='ideal'?pi:pr,R=crankRadius(),CX=crankCenter();
+ // Synchroniser l'arc coloré avec la phase, y compris pendant l'animation et la navigation manuelle.
+ if(mode==='ideal')updateIdealCrankPhaseArcs();
+ $('thetaRead').innerHTML=fmt(angle,1)+'° <small>/ 720°</small>';
+ $('volumeRead').innerHTML=fmt(v,1)+' <small>cm³</small>';$('pressureRead').innerHTML=fmt(p,2)+' <small>bar'+(mode==='both'?' (réel)':'')+'</small>';$('phaseRead').textContent=phase(angle);
+ // Cycle idéal : basculement instantané à PMH/PMB, sans distribution réelle.
+ const idealIntakeOpen=angle>=0 && angle<180;
+ const idealExhaustOpen=angle>=540 && angle<720;
+ let li=camShape(cams.admission,angle,mode==='ideal'?idealIntakeOpen:null);
+ let le=camShape(cams.echappement,angle,mode==='ideal'?idealExhaustOpen:null);
+ updateValveLiftCursor();updateIdealAngleCursor();
+ $('piston').setAttribute('transform',`translate(${m.face} ${CY}) scale(1 ${q.bore/80}) translate(0 ${-CY})`);
+ const currentPhase=mode==='ideal'?phaseTheorique(angle):phase(angle);
+ let gasColor='#c47b28', gasOpacity=.18;
+ if(currentPhase==='Combustion'){
+   // Rouge sensiblement renforcé dès l'AA, jusqu'à la pression maximale réelle.
+   gasColor='#d52a29'; gasOpacity=.43;
+ }else if(currentPhase==='Détente'){
+   // Retour au rouge antérieur : de la pression maximale jusqu'à l'AOE.
+   gasColor='#d84a3b'; gasOpacity=.22;
+ }else if(currentPhase==='Compression'){
+   if(angle<model.rfa){gasColor='#2e8fc6';gasOpacity=.17;}
+   else {gasColor='#0c5ea8';gasOpacity=.22;}
+ }else if(currentPhase==='Admission'){
+   gasColor='#2e8fc6';gasOpacity=.17;
+ }
+ // Le texte appartient au groupe mobile du piston et reste vertical dans le bandeau grisé.
+ // Taille fixe pour conserver la même police et le même aspect selon la phase.
+ $('cylinderPhaseLabel').textContent=currentPhase.toLocaleUpperCase('fr-FR');
+ $('cylinderPhaseLabel').setAttribute('font-size','11.5');
+ $('cylinderPhaseLabel').setAttribute('font-weight','400');
+ // Respecter le même code couleur que les gaz du cylindre à chaque étape.
+ $('cylinderPhaseLabel').setAttribute('fill',gasColor);
+ $('cylinderGas').setAttribute('width',Math.max(0,m.face-338));
+ $('cylinderGas').setAttribute('fill',gasColor);
+ $('cylinderGas').setAttribute('opacity',gasOpacity);
+ // Remplissage visuel des conduits selon la phase et l'état des soupapes.
+ const intakeOpen = li>0.015;
+ const exhaustOpen = le>0.015;
+ $('intakePortGas').setAttribute('stroke',currentPhase==='Compression' && angle>=model.rfa ? '#0c5ea8' : '#2e8fc6');
+ $('intakePortGas').setAttribute('opacity',intakeOpen ? .78 : 0);
+ $('exhaustPortGas').setAttribute('stroke', angle>=model.aoe && angle<540 ? '#d84a3b' : '#c47b28');
+ $('exhaustPortGas').setAttribute('opacity',exhaustOpen ? .78 : 0);
+ $('crankArm').setAttribute('x1',CX);$('crankArm').setAttribute('x2',m.x);$('crankArm').setAttribute('y2',m.y);
+ $('crankPin').setAttribute('cx',m.x);$('crankPin').setAttribute('cy',m.y);
+ $('crankPinDragHit').setAttribute('cx',m.x);$('crankPinDragHit').setAttribute('cy',m.y);
+ $('crankPinDragHit').setAttribute('aria-valuenow',angle.toFixed(1));
+ $('crankPinDragHit').setAttribute('aria-valuetext',`${fmt(angle,1)} degrés sur les 720° du cycle`);
+ // Affichage discret de l'angle instantané à proximité du maneton.
+ $('crankPinAngle').setAttribute('x',(m.x+16).toFixed(2));
+ $('crankPinAngle').setAttribute('y',(m.y-22).toFixed(2));
+ $('crankPinAngle').textContent=fmt(angle,1)+'°';
+ for(let id of ['connectingRodOuter','connectingRodInner']){let e=$(id);e.setAttribute('x1',m.pin);e.setAttribute('y1',CY);e.setAttribute('x2',m.x);e.setAttribute('y2',m.y);}
+ // Projeter le point P–V jusqu'au sommet du piston : même abscisse et hauteur adaptée à l'alésage.
+ const pistonTop=ENGINE_Y+CY-72*(q.bore/80);
+ $('volumeGuide').setAttribute('x1',m.face);$('volumeGuide').setAttribute('x2',m.face);$('volumeGuide').setAttribute('y1',plotY(p));$('volumeGuide').setAttribute('y2',pistonTop);
+ // Volume instantané décalé latéralement pour libérer la verticale rouge pointillée.
+ const midTravel=leftFace()+crankRadius();
+ const volumeOffset=m.face<=midTravel?34:-34;
+ $('instantVolumeLabel').setAttribute('transform',`translate(${m.face+volumeOffset} 0)`);
+ $('instantVolumeValue').textContent=fmt(v,1)+' cm³';
+ $('pressureLine').setAttribute('y1',plotY(p));$('pressureLine').setAttribute('y2',plotY(p));$('pressureLine').setAttribute('x2',m.face);
+ // Pression instantanée à gauche de l'axe des ordonnées P–V : le bord droit
+ // du texte reste 35 unités à gauche des graduations fixes (ancrées en x=321).
+ // Le décalage vertical évite de confondre la mesure actuelle et les repères fixes.
+ const pressureX=mode==='ideal'?216:286;
+ const pressureAnchor='end';
+ // Les pressions proches de l'atmosphère sont écartées verticalement du
+ // libellé « P atmosphérique » (aligné sur sa ligne de référence).
+ const nearAtmos=value=>Math.abs(plotY(value)-plotY(q.p0))<28;
+ for(const [id,value,visible,offset,title] of [
+   ['instantPressureReal',pr,mode!=='ideal',-10,mode==='both'?'Réel ':''],
+   ['instantPressureIdeal',pi,mode!=='real',mode==='both'?19:-10,mode==='both'?'Théo. ':'']
+ ]){
+   const label=$(id);
+   label.style.display=visible?'':'none';
+   if(!visible)continue;
+   label.textContent=title+fmt(value,2)+' bar';
+   label.setAttribute('x',pressureX);
+   const safeOffset=nearAtmos(value)
+     ? (id==='instantPressureReal' && mode==='both' ? -34 : -17)
+     : offset;
+   label.setAttribute('y',Math.max(58,Math.min(P_BOTTOM-10,plotY(value)+safeOffset)));
+   label.setAttribute('text-anchor',pressureAnchor);
+ }
+ for(let [id,val] of [['realDot',pr],['idealDot',pi]]){$(id).setAttribute('cx',m.face);$(id).setAttribute('cy',plotY(val));}
+ for(let [id,l] of [['admission',li],['echappement',le]]){valves[id].head.setAttribute('x1',339+22*l);valves[id].head.setAttribute('x2',339+22*l);valves[id].stem.setAttribute('x2',339+22*l);}
+ $('timingNeedleDot').setAttribute('cx',885-R*Math.cos(angle*rad));$('timingNeedleDot').setAttribute('cy',565-R*Math.sin(angle*rad));
+ // Étincelle à chaque passage au voisinage de l'avance à l'allumage, mais
+ // uniquement sur la compression du cycle à 720°. Jamais à l'autre PMH.
+ // En théorique, l'allumage a lieu au PMH (360°), sans avance.
+ const sparkAngle=mode==='ideal'?360:model.ignitionAngle;
+ const sparkNear=Math.abs(angle-sparkAngle)<=(mode==='ideal'?3.5:5);
+ const onCompression=angle>=180 && angle<=360;
+ $('sparkFlash').setAttribute('opacity',sparkNear && onCompression ? 1 : 0);
+ $('angle').value=angle;
+ $('piston').setAttribute('aria-valuenow',angle.toFixed(1));
+ $('piston').setAttribute('aria-valuetext',`${fmt(angle,1)} degrés, ${phase(angle)}`);
+ document.querySelectorAll('[data-phase]').forEach(el=>el.setAttribute('aria-pressed',+el.dataset.phase===Math.floor(Math.min(angle,719.9)/180)*180?'true':'false'));
+}
+// Mode automatique : conserver les proportions du vilebrequin et des courbes,
+// et exploiter toute la largeur disponible en diminuant seulement l'échelle verticale P–V.
+let autoFitPV=false;
+function showHeightSelection(key){
+ document.querySelectorAll('[data-pv-height]').forEach(b=>
+   b.setAttribute('aria-pressed',String(b.dataset.pvHeight===key)));
+}
+function fitPVToViewport(){
+ if(!autoFitPV || !document.body.classList.contains('graph-view'))return;
+ const svg=$('scene'), area=document.querySelector('.illustration');
+ const h=document.querySelector('.heading').getBoundingClientRect().height;
+ const c=document.querySelector('.controls').getBoundingClientRect().height;
+ document.documentElement.style.setProperty('--graph-chrome-height',Math.ceil(h+c+3)+'px');
+ const availableWidth=Math.max(1,area.clientWidth), availableHeight=Math.max(1,area.clientHeight);
+ // Le reste de la figure a une hauteur constante dans chaque architecture.
+ const v=svg.viewBox.baseVal;
+ const invariantHeight=v.height-P_BOTTOM;
+ const desiredHeight=v.width * availableHeight / availableWidth;
+ // 300 = hauteur minimale conservant la lisibilité du diagramme P–V.
+ const fitted=Math.round(clamp(desiredHeight-invariantHeight,300,1070));
+ if(Math.abs(fitted-P_BOTTOM)>=1){ P_BOTTOM=fitted; redraw(); }
+}
+function updateAll(resetGreen=false){normalizeParameters();redraw();fitPVToViewport();}
+function setGraphFocus(active){
+ document.body.classList.toggle('graph-view',active);
+ if(active){autoFitPV=true;showHeightSelection('auto');fitPVToViewport();}
+}
+// Deux modes visibles : « Original » et « Adapter à l’écran » ;
+// les mêmes boutons restent accessibles même en affichage adapté.
+for(const b of document.querySelectorAll('[data-pv-height]'))b.addEventListener('click',()=>{
+ if(b.dataset.pvHeight==='auto'){
+   autoFitPV=true;
+   setGraphFocus(true);
+   fitPVToViewport();
+ }else{
+   autoFitPV=false;
+   setGraphFocus(false);
+   P_BOTTOM=+b.dataset.pvHeight;
+   updateAll(false);
+ }
+ showHeightSelection(b.dataset.pvHeight);
+});
+document.addEventListener('keydown',ev=>{
+ if(ev.key==='Escape'&&document.body.classList.contains('graph-view')){
+   autoFitPV=false;
+   setGraphFocus(false);
+   P_BOTTOM=560;
+   showHeightSelection('560');
+   updateAll(false);
+ }
+});
+window.addEventListener('resize',()=>fitPVToViewport());
+Object.keys(factoryDefaults).forEach(k=>$(k).addEventListener('input',fromForm));
+$('resetRFACalculated').addEventListener('click',()=>{rfaManualOverride=false;updateAll();presetNotice('La pression au RFA suit de nouveau le calcul de masse et le gain d’inertie.');});
+for(const btn of document.querySelectorAll('[data-engine]'))btn.addEventListener('click',()=>{
+ const oldVolume=swept(),oldEps=eps();
+ const preset=presetDimensions(btn.dataset.engine,oldVolume);
+ if(!preset.inBounds){
+   presetNotice('Cette géométrie est hors des bornes d’alésage/course : les réglages sont inchangés.');
+   return;
+ }
+ // Les autres paramètres, en particulier le volume de chambre, restent inchangés.
+ q.bore=preset.bore;
+ q.stroke=preset.stroke;
+ normalizeParameters();
+ running=false;$('playPause').textContent='▶ Lancer';
+ updateAll();
+ presetNotice(`${ENGINE_PRESETS[btn.dataset.engine].label} : ${fmt(q.bore,2)} × ${fmt(q.stroke,2)} mm · `+
+   `cylindrée ${fmt(oldVolume,2)} → ${fmt(swept(),2)} cm³ · `+
+   `rapport volumétrique ${fmt(oldEps,2)} → ${fmt(eps(),2)}:1.`);
+});
+$('saveParamsDefault').addEventListener('click',()=>{
+ // Instantané exact des paramètres et de la forme du cycle réel, sans arrondi.
+ defaults={...q};
+ defaultsCurve=captureRealCurve();
+ try{
+   localStorage.setItem(USER_PRESET_KEY,JSON.stringify({
+     version:2,
+     parameters:{...defaults},
+     realCurve:{...defaultsCurve},
+     // Compatibilité avec les versions précédentes du simulateur.
+     combustionPressure:defaultsCurve.combustionPressure
+   }));
+   presetNotice('Enregistré : paramètres moteur, distribution, vitesse de combustion et pressions modifiables (Pmax/PMH sont calculées).');
+ }catch(_error){presetNotice('Sauvegarde locale indisponible : les réglages sont conservés pour cette session seulement.');}
+});
+$('resetParams').addEventListener('click',()=>{
+ applyParameterValues(defaults,defaultsCurve.rfaManualOverride);
+ restoreRealCurve(defaultsCurve);
+ $('parameterWarning').textContent='';updateAll();
+ presetNotice('Tous les paramètres enregistrés ont été rétablis ; la combustion est recalculée.');
+});
+$('factoryParams').addEventListener('click',()=>{
+ defaults={...factoryDefaults};defaultsCurve={combustionPressure:null,rfaManualOverride:false};
+ applyParameterValues(defaults,false);restoreRealCurve(defaultsCurve);
+ try{localStorage.removeItem(USER_PRESET_KEY);}catch(_error){}
+ $('parameterWarning').textContent='';updateAll();
+ presetNotice('Réglages d’origine restaurés et sauvegarde personnelle effacée.');
+});
+$('resetGreen').addEventListener('click',()=>{rfaManualOverride=false;updateAll();presetNotice('La pression RFA est revenue au calcul et la courbe de combustion a été recalculée.');});
+function findGreenAngle(x,which){
+ const lim=greenBounds(which),previous=green[which].angle;
+ let best=lim.lo,dist=Infinity;
+ for(let i=0;i<=450;i++){const t=lim.lo+(lim.hi-lim.lo)*i/450,d=Math.abs(crank(t).face-x)+Math.abs(t-previous)*0.00003;if(d<dist){dist=d;best=t;}}
+ return best;
+}
+for(const [key,g] of Object.entries(handleSVG)) {
+ if(['pmbExhaust','pmbAdmission','pmax','combustion'].includes(key))continue; // Points calculés, pas de saisie manuelle.
+ g.addEventListener('pointerdown',ev=>{ if(mode==='ideal') return; const pos=pointerScene(ev);if(!pos)return; activeHandle=key; dragOrigin={x:pos.x,y:pos.y,pressure:handlePos(key).pressure,pScale:yMax(),parameters:{...q}}; running=false; $('playPause').textContent='▶ Lancer'; g.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+ g.addEventListener('pointermove',ev=>{ if(activeHandle===key) dragHandle(ev,key); });
+ const stop=()=>{ if(activeHandle===key){ activeHandle=null;dragOrigin=null; redraw(); } };
+ g.addEventListener('pointerup',stop); g.addEventListener('pointercancel',stop); g.addEventListener('lostpointercapture',stop);
+ g.addEventListener('keydown',ev=>{
+   if(mode==='ideal') return;
+   const b=handleBounds(key),angStep=ev.shiftKey?2:0.5,pStep=ev.shiftKey?0.2:0.05;
+   if(key==='combustion'){
+      const z=green[key];
+      if(ev.key==='ArrowUp') z.pressure=clamp(z.pressure+pStep,b.pLo,b.pHi);
+      else if(ev.key==='ArrowDown') z.pressure=clamp(z.pressure-pStep,b.pLo,b.pHi);
+      else return; ev.preventDefault(); redraw(); return;
+   }
+   if(key==='intake'){
+      if(ev.key==='ArrowLeft') q.intakePointAngle=clamp(q.intakePointAngle-angStep,b.lo,b.hi);
+      else if(ev.key==='ArrowRight') q.intakePointAngle=clamp(q.intakePointAngle+angStep,b.lo,b.hi);
+      else if(ev.key==='ArrowUp') q.volumetricEfficiency=clamp(q.volumetricEfficiency+pStep*100,+$('volumetricEfficiency').min,+$('volumetricEfficiency').max);
+      else if(ev.key==='ArrowDown') q.volumetricEfficiency=clamp(q.volumetricEfficiency-pStep*100,+$('volumetricEfficiency').min,+$('volumetricEfficiency').max);
+      else return; syncInputs(['volumetricEfficiency','intakePointAngle']); }
+   else if(key==='exhaust'){
+      if(ev.key==='ArrowLeft') q.exhaustPointAngle=clamp(q.exhaustPointAngle-angStep,b.lo,b.hi);
+      else if(ev.key==='ArrowRight') q.exhaustPointAngle=clamp(q.exhaustPointAngle+angStep,b.lo,b.hi);
+      else if(ev.key==='ArrowUp') q.backPressure=clamp(q.backPressure+pStep,+$('backPressure').min,+$('backPressure').max);
+      else if(ev.key==='ArrowDown') q.backPressure=clamp(q.backPressure-pStep,+$('backPressure').min,+$('backPressure').max);
+      else return; syncInputs(['backPressure','exhaustPointAngle']); }
+   else if(['aoa','rfa','rfe'].includes(key)){
+     const el=$(key),current=q[key],mn=+el.min,mx=+el.max,pk={aoa:'pAtAOA',rfa:'pAtRFA',rfe:'pAtRFE'}[key],sign=key==='aoa'?-1:1;
+     if(ev.key==='ArrowLeft')q[key]=clamp(current-sign*angStep,mn,mx);
+     else if(ev.key==='ArrowRight')q[key]=clamp(current+sign*angStep,mn,mx);
+     else if(ev.key==='ArrowUp' && key==='rfa'){rfaManualOverride=true;q[pk]=clamp(q[pk]+pStep,b.pLo,b.pHi);}
+     else if(ev.key==='ArrowDown' && key==='rfa'){rfaManualOverride=true;q[pk]=clamp(q[pk]-pStep,b.pLo,b.pHi);}
+     else return;syncInputs([key,pk]);
+   }
+   else if(key==='aa'){ if(ev.key==='ArrowLeft') q.aa=clamp(q.aa+angStep,+$('aa').min,+$('aa').max); else if(ev.key==='ArrowRight') q.aa=clamp(q.aa-angStep,+$('aa').min,+$('aa').max); else return; syncInputs(['aa']); }
+   else if(key==='pmax'){return;} // Le pic est calculé : aucune touche ne le déplace.
+   else if(key==='aoe'){ if(ev.key==='ArrowLeft') q.aoe=clamp(q.aoe+angStep,+$('aoe').min,+$('aoe').max); else if(ev.key==='ArrowRight') q.aoe=clamp(q.aoe-angStep,+$('aoe').min,+$('aoe').max); else if(ev.key==='ArrowUp') q.pAtAOE=clamp(q.pAtAOE+pStep,+$('pAtAOE').min,+$('pAtAOE').max); else if(ev.key==='ArrowDown') q.pAtAOE=clamp(q.pAtAOE-pStep,+$('pAtAOE').min,+$('pAtAOE').max); else return; syncInputs(['aoe','pAtAOE']); }
+   else return;
+   ev.preventDefault(); updateAll(false);
+ });
+}
+// Un repère de distribution peut être saisi directement sur le cadran.
+let activeTimingKey=null,activeTimingPointer=null;
+$('timingMarks').addEventListener('pointerdown',ev=>{
+ const mark=ev.target.closest?.('[data-timing-key]');
+ if(!mark)return;
+ const key=mark.getAttribute('data-timing-key');
+ if(!Object.prototype.hasOwnProperty.call(q,key))return;
+ running=false;$('playPause').textContent='▶ Lancer';
+ activeTimingKey=key;activeTimingPointer=ev.pointerId;
+ $('timingMarks').setPointerCapture(ev.pointerId);
+ ev.preventDefault();
+});
+$('timingMarks').addEventListener('pointermove',ev=>{
+ if(activeTimingKey!==null&&ev.pointerId===activeTimingPointer)updateTimingKeyFromPointer(activeTimingKey,ev);
+});
+function stopTimingDrag(){activeTimingKey=null;activeTimingPointer=null;}
+for(const type of ['pointerup','pointercancel','lostpointercapture'])$('timingMarks').addEventListener(type,stopTimingDrag);
+$('timingMarks').addEventListener('keydown',ev=>{
+ const mark=ev.target.closest?.('[data-timing-key]');
+ if(!mark||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(ev.key))return;
+ ev.preventDefault();const key=mark.getAttribute('data-timing-key');
+ const step=ev.shiftKey?5:1,sign=(ev.key==='ArrowLeft'||ev.key==='ArrowDown')?-1:1;
+ const el=$(key);q[key]=clamp(q[key]+sign*step,+el.min,+el.max);updateAll(false);
+});
+
+// Pilotage manuel en saisissant le maneton : le mouvement est angulaire et
+// continu, avec mémorisation du tour courant (une position = deux passages
+// possibles sur les 720°). Une rotation à gauche recule ; à droite avance.
+let crankPinDrag=null;
+function pointerCrankAngle(ev){
+ const p=pointerScene(ev); if(!p)return null;
+ // L'assemblage moteur est translaté verticalement dans le SVG principal.
+ const y=p.y-ENGINE_Y;
+ return ((Math.atan2(CY-y,crankCenter()-p.x)/rad)%360+360)%360;
+}
+$('crankPinDragHit').addEventListener('pointerdown',ev=>{
+ if(ev.button!==undefined&&ev.button!==0)return;
+ const a=pointerCrankAngle(ev);if(a===null)return;
+ running=false;lastTime=0;$('playPause').textContent='▶ Lancer';
+ crankPinDrag={pointerId:ev.pointerId,lastAngle:a};
+ $('crankPinDragHit').setPointerCapture(ev.pointerId);
+ ev.preventDefault();
+});
+$('crankPinDragHit').addEventListener('pointermove',ev=>{
+ const d=crankPinDrag;if(!d||d.pointerId!==ev.pointerId)return;
+ const a=pointerCrankAngle(ev);if(a===null)return;
+ // Différence signée la plus courte : pas de saut au passage 359°→0°.
+ const delta=((a-d.lastAngle+540)%360)-180;
+ d.lastAngle=a;
+ if(Math.abs(delta)>0.001){
+   angle=((angle+delta)%720+720)%720;
+   render();
+ }
+ ev.preventDefault();
+});
+function stopCrankPinDrag(ev){
+ if(crankPinDrag && (ev.pointerId===crankPinDrag.pointerId || ev.type==='lostpointercapture')) crankPinDrag=null;
+}
+for(const type of ['pointerup','pointercancel','lostpointercapture'])
+ $('crankPinDragHit').addEventListener(type,stopCrankPinDrag);
+$('crankPinDragHit').addEventListener('keydown',ev=>{
+ const change=ev.shiftKey?10:2;
+ if(ev.key==='ArrowRight'||ev.key==='ArrowUp')angle=(angle+change)%720;
+ else if(ev.key==='ArrowLeft'||ev.key==='ArrowDown')angle=(angle-change+720)%720;
+ else if(ev.key==='Home')angle=0;
+ else if(ev.key==='End')angle=720;
+ else return;
+ ev.preventDefault();running=false;lastTime=0;$('playPause').textContent='▶ Lancer';render();
+});
+
+// Glissement direct du piston : inversion cinématique sur le demi-tour courant.
+// Lorsqu'un point mort est atteint, le mouvement retour avance sur le temps suivant.
+let pistonDrag=null;
+$('piston').addEventListener('pointerdown',ev=>{
+ if(ev.button!==undefined&&ev.button!==0)return;
+ const pos=pointerScene(ev);if(!pos)return;
+ running=false;$('playPause').textContent='▶ Lancer';
+ const segment=Math.min(3,Math.floor(Math.min(angle,719.999)/180));
+ pistonDrag={pointerId:ev.pointerId,startX:pos.x,startFace:crank(angle).face,
+   lastX:pos.x,segment};
+ $('piston').setPointerCapture(ev.pointerId);
+ ev.preventDefault();
+});
+function angleForPistonFace(face,segment){
+ const lo0=segment*180,hi0=(segment+1)*180,increasing=segment%2===0;
+ let lo=lo0,hi=hi0;
+ for(let i=0;i<32;i++){
+   const mid=(lo+hi)/2;
+   if((crank(mid).face<face)===increasing)lo=mid;else hi=mid;
+ }
+ return (lo+hi)/2;
+}
+$('piston').addEventListener('pointermove',ev=>{
+ const d=pistonDrag;if(!d||ev.pointerId!==d.pointerId)return;
+ const p=pointerScene(ev);if(!p)return;
+ const face=clamp(d.startFace+p.x-d.startX,leftFace(),leftFace()+2*crankRadius());
+ const dir=p.x-d.lastX;
+ const end=(d.segment+1)*180;
+ // L'inversion de sens au point mort poursuit le cycle, sans saut de phase.
+ if(Math.abs(angle-end)<0.02 &&
+    ((d.segment%2===0&&dir<-.01)||(d.segment%2===1&&dir>.01))){
+   d.segment=(d.segment+1)%4;
+ }
+ angle=angleForPistonFace(face,d.segment);
+ d.lastX=p.x;
+ render();ev.preventDefault();
+});
+const stopPistonDrag=()=>{pistonDrag=null;};
+for(const type of ['pointerup','pointercancel','lostpointercapture'])$('piston').addEventListener(type,stopPistonDrag);
+$('piston').addEventListener('keydown',ev=>{
+ if(!['ArrowLeft','ArrowRight'].includes(ev.key))return;
+ ev.preventDefault();running=false;$('playPause').textContent='▶ Lancer';
+ angle=clamp(angle+(ev.key==='ArrowRight'?1:-1)*(ev.shiftKey?10:2),0,720);render();
+});
+
+$('angle').addEventListener('input',e=>{running=false;$('playPause').textContent='▶ Lancer';angle=+e.target.value;render();});
+// La graduation de levée commence au PMH combustion (360° simulateur) :
+// conversion inverse de celle du curseur graphique, sans affecter le cycle de 720°.
+let liftAxisDragging=null;
+function setAngleFromLiftAxis(ev){
+ const pt=pointerScene(ev);if(!pt)return;
+ const x=clamp(pt.x,LIFT_CHART.left,LIFT_CHART.right);
+ const graphDeg=720*(x-LIFT_CHART.left)/(LIFT_CHART.right-LIFT_CHART.left);
+ angle=Math.round(((graphDeg+360)%720)*2)/2;
+ running=false;
+ $('playPause').textContent='▶ Lancer';
+ render();
+}
+$('liftAxisSlider').addEventListener('pointerdown',ev=>{
+ if(ev.button!==0)return;
+ liftAxisDragging=ev.pointerId;
+ $('liftAxisSlider').setPointerCapture(ev.pointerId);
+ setAngleFromLiftAxis(ev);
+ ev.preventDefault();
+});
+$('liftAxisSlider').addEventListener('pointermove',ev=>{
+ if(liftAxisDragging!==ev.pointerId)return;
+ setAngleFromLiftAxis(ev);ev.preventDefault();
+});
+const stopLiftAxisDrag=()=>{liftAxisDragging=null;};
+for(const eventName of ['pointerup','pointercancel','lostpointercapture'])
+ $('liftAxisSlider').addEventListener(eventName,stopLiftAxisDrag);
+$('liftAxisSlider').addEventListener('keydown',ev=>{
+ const step=ev.shiftKey?10:1;
+ let next=angle;
+ if(ev.key==='ArrowLeft'||ev.key==='ArrowDown')next-=step;
+ else if(ev.key==='ArrowRight'||ev.key==='ArrowUp')next+=step;
+ else if(ev.key==='PageDown')next-=10;
+ else if(ev.key==='PageUp')next+=10;
+ else if(ev.key==='Home')next=0;
+ else if(ev.key==='End')next=720;
+ else return;
+ ev.preventDefault();
+ running=false;$('playPause').textContent='▶ Lancer';
+ angle=clamp(next,0,720);render();
+});
+// Curseur angulaire minimal en mode théorique, indépendant du graphique des levées.
+let idealAngleDragging=null;
+function setAngleFromIdealTimeline(ev){
+ const pt=pointerScene(ev);if(!pt)return;
+ const ratio=(clamp(pt.x,LIFT_CHART.left,LIFT_CHART.right)-LIFT_CHART.left)/(LIFT_CHART.right-LIFT_CHART.left);
+ angle=Math.round(720*ratio*2)/2;
+ running=false;$('playPause').textContent='▶ Lancer';render();
+}
+$('idealAngleSlider').addEventListener('pointerdown',ev=>{
+ if(ev.button!==0)return;
+ idealAngleDragging=ev.pointerId;
+ $('idealAngleSlider').setPointerCapture(ev.pointerId);
+ setAngleFromIdealTimeline(ev);ev.preventDefault();
+});
+$('idealAngleSlider').addEventListener('pointermove',ev=>{
+ if(ev.pointerId!==idealAngleDragging)return;
+ setAngleFromIdealTimeline(ev);ev.preventDefault();
+});
+for(const n of ['pointerup','pointercancel','lostpointercapture'])
+ $('idealAngleSlider').addEventListener(n,()=>{idealAngleDragging=null;});
+$('idealAngleSlider').addEventListener('keydown',ev=>{
+ const change=ev.shiftKey?10:1;
+ if(ev.key==='ArrowLeft'||ev.key==='ArrowDown')angle=clamp(angle-change,0,720);
+ else if(ev.key==='ArrowRight'||ev.key==='ArrowUp')angle=clamp(angle+change,0,720);
+ else if(ev.key==='Home')angle=0;
+ else if(ev.key==='End')angle=720;
+ else return;
+ ev.preventDefault();running=false;$('playPause').textContent='▶ Lancer';render();
+});
+document.querySelectorAll('[data-phase]').forEach(b=>b.addEventListener('click',()=>{running=false;$('playPause').textContent='▶ Lancer';angle=+b.dataset.phase;render();}));
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));updateAll();}));
+$('playPause').addEventListener('click',()=>{
+ if(!running){angle=0;render();} // Chaque lancement repart au début de l'admission (0°).
+ running=!running;
+ $('playPause').textContent=running?'⏸ Pause':'▶ Lancer';
+ lastTime=0;
+ if(running)requestAnimationFrame(animate);
+});
+// Rythme pédagogique du cycle, distinct d'une simulation physique de la vitesse moteur.
+// Trois temps résistants plus lents ; combustion très lente (AA -> Pmax),
+// puis détente motrice accélérée (Pmax -> AOE).
+// Les passages se font progressivement pour éviter tout à-coup dans le piston.
+function smoothAngleTransition(a,start,end){
+ const u=clamp((a-start)/(end-start),0,1);
+ return u*u*(3-2*u);
+}
+function pedagogicalSpeedFactor(a){
+ const t=((a%720)+720)%720;
+ const aa=model.ignitionAngle,peak=model.peak,aoe=model.aoe;
+ // Admission : 0,68× ; compression : 0,56× ; combustion : 0,23× ;
+ // détente : 1,70× ; échappement : 0,68×.
+ let k=.68;
+ k+=(.56-.68)*smoothAngleTransition(t,169,191);
+ k+=(.23-.56)*smoothAngleTransition(t,aa-6,aa+5);
+ k+=(1.70-.23)*smoothAngleTransition(t,peak+1,peak+29);
+ k+=(.68-1.70)*smoothAngleTransition(t,aoe-16,aoe+17);
+ // Croisement au PMH 0°/720° : ralentissement supplémentaire visible.
+ const crossingDist=Math.min(t,720-t);
+ const crossingWeight=1-smoothAngleTransition(crossingDist,8,42);
+ k*=1-.58*crossingWeight;
+ return clamp(k,.18,1.70);
+}
+function animate(now){
+ if(!running)return;
+ if(lastTime){
+   // Pas de saut à la reprise d'un onglet ou d'une fenêtre masquée.
+   const deltaMs=Math.min(70,Math.max(0,now-lastTime));
+   angle=(angle+deltaMs*.045*speed*pedagogicalSpeedFactor(angle))%720;
+ }
+ lastTime=now;
+ render();
+ requestAnimationFrame(animate);
+}
+loadUserPreset();
+// Chaque ouverture démarre en architecture carrée et en cycle théorique,
+// même si une autre architecture a été enregistrée auparavant.
+// Les autres valeurs de calcul et les éventuels points sauvegardés sont préservés.
+{
+ const squared=presetDimensions('carre',swept());
+ if(squared.inBounds){q.bore=squared.bore;q.stroke=squared.stroke;}
+}
+document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
+updateAll();
+})();
+</script>
+</body>
+</html>
